@@ -18,10 +18,40 @@ import './App.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* ---- Image paths to preload ---- */
+const INTRO_FRAMES_PC = Array.from({ length: 120 }, (_, i) =>
+  `/images/new/intropc/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
+);
+const INTRO_FRAMES_MOBILE = Array.from({ length: 210 }, (_, i) =>
+  `/images/new/newintromobileg/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
+);
+const WALKING_FRAMES_PC = Array.from({ length: 117 }, (_, i) =>
+  `/images/new/walkingpc/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
+);
+const WALKING_FRAMES_MOBILE = Array.from({ length: 72 }, (_, i) =>
+  `/images/new/walkingmobile/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
+);
+
+function getMobilePaths(): string[] {
+  const paths: string[] = [];
+  paths.push(...INTRO_FRAMES_MOBILE);
+  paths.push(...WALKING_FRAMES_MOBILE);
+  return paths;
+}
+
+function getDesktopPaths(): string[] {
+  const paths: string[] = [];
+  paths.push(...INTRO_FRAMES_PC);
+  paths.push(...WALKING_FRAMES_PC);
+  return paths;
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [loadingPercent, setLoadingPercent] = useState(0);
+  const [assetsReady, setAssetsReady] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isPlayingRef = useRef(false);
@@ -31,11 +61,9 @@ function App() {
     setMenuOpen(open);
   }, []);
 
-  /* ---- Play Audio Function ---- */
   const playAudio = useCallback((force = false) => {
     if (!audioRef.current || isPlayingRef.current) return;
     if (userMutedRef.current && !force) return;
-
     audioRef.current.volume = 0.5;
     audioRef.current
       .play()
@@ -43,12 +71,9 @@ function App() {
         isPlayingRef.current = true;
         setIsPlaying(true);
       })
-      .catch(() => {
-        // Autoplay policy prevented playback until explicit tap
-      });
+      .catch(() => {});
   }, []);
 
-  /* ---- Pause Audio Function ---- */
   const pauseAudio = useCallback(() => {
     if (!audioRef.current) return;
     audioRef.current.pause();
@@ -56,7 +81,6 @@ function App() {
     setIsPlaying(false);
   }, []);
 
-  /* ---- Toggle Audio Function ---- */
   const toggleAudio = useCallback(() => {
     if (isPlayingRef.current) {
       userMutedRef.current = true;
@@ -67,18 +91,15 @@ function App() {
     }
   }, [playAudio, pauseAudio]);
 
-  /* ---- Unlock audio on first user touch/click/scroll ---- */
   useEffect(() => {
     const handleFirstUserInteraction = () => {
       if (!isPlayingRef.current && !userMutedRef.current) {
         playAudio();
       }
     };
-
     window.addEventListener('pointerdown', handleFirstUserInteraction, { passive: true });
     window.addEventListener('touchstart', handleFirstUserInteraction, { passive: true });
     window.addEventListener('scroll', handleFirstUserInteraction, { passive: true });
-
     return () => {
       window.removeEventListener('pointerdown', handleFirstUserInteraction);
       window.removeEventListener('touchstart', handleFirstUserInteraction);
@@ -86,7 +107,6 @@ function App() {
     };
   }, [playAudio]);
 
-  /* ---- Door Open Trigger ---- */
   const handleDoorOpen = useCallback(() => {
     if (userMutedRef.current) return;
     playAudio();
@@ -101,24 +121,59 @@ function App() {
       touchMultiplier: 1.2,
     });
     lenisRef.current = lenis;
-
     lenis.on('scroll', ScrollTrigger.update);
-
-    const raf = (time: number) => {
-      lenis.raf(time * 1000);
-    };
+    const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
-
     return () => {
       gsap.ticker.remove(raf);
       lenis.destroy();
     };
   }, []);
 
+  /* ---- Preload all images before showing anything ---- */
+  const allLoadedRef = useRef(false);
+
+  useEffect(() => {
+    const paths = window.innerWidth < 768 ? getMobilePaths() : getDesktopPaths();
+    const total = paths.length;
+    let loaded = 0;
+
+    paths.forEach((src) => {
+      const img = new Image();
+      img.onload = img.onerror = () => {
+        loaded++;
+        const pct = Math.round((loaded / total) * 100);
+        setLoadingPercent(pct);
+        if (pct >= 100 && !allLoadedRef.current) {
+          allLoadedRef.current = true;
+          setTimeout(() => setAssetsReady(true), 400);
+        }
+      };
+      img.src = src;
+    });
+
+    return () => {};
+  }, []);
+
   return (
     <div className="bg-[#05140e] min-h-screen">
-      {/* Central Audio Player */}
+      {!assetsReady && (
+        <div className="preloader">
+          <div className="preloader-inner">
+            <h1 className="preloader-names font-cinzel">
+              RIZWAN{' '}
+              <span className="preloader-amp">&amp;</span>{' '}
+              BINSHA
+            </h1>
+            <div className="preloader-bar-track">
+              <div className="preloader-bar-fill" style={{ width: `${loadingPercent}%` }} />
+            </div>
+            <span className="preloader-text">{loadingPercent}%</span>
+          </div>
+        </div>
+      )}
+
       <audio
         ref={audioRef}
         src="/audio/nikah-nasheed.mp3"
@@ -134,10 +189,8 @@ function App() {
         }}
       />
 
-      {/* Floating Audio Control Button — always visible from the beginning */}
-      <AudioControl isPlaying={isPlaying} onToggle={toggleAudio} />
+      {assetsReady && <AudioControl isPlaying={isPlaying} onToggle={toggleAudio} />}
 
-      {/* Navbar — visible once user scrolls past intro */}
       {introDone && (
         <>
           <Navbar onMenuToggle={handleMenuToggle} menuOpen={menuOpen} />
@@ -145,17 +198,16 @@ function App() {
         </>
       )}
 
-      {/* Intro canvas sequence */}
-      <IntroSection
-        onIntroComplete={() => setIntroDone(true)}
-        onIntroReset={() => setIntroDone(false)}
-        onDoorOpen={handleDoorOpen}
-      />
+      {assetsReady && (
+        <IntroSection
+          onIntroComplete={() => setIntroDone(true)}
+          onIntroReset={() => setIntroDone(false)}
+          onDoorOpen={handleDoorOpen}
+        />
+      )}
 
-      {/* Background canvas sequence */}
       <WalkingBg visible={introDone} />
 
-      {/* Main wedding content */}
       <div className={`post-intro ${introDone ? 'post-intro--visible' : ''}`}>
         <CoupleReveal />
         <WeddingEvents />
