@@ -1,0 +1,218 @@
+/* ======================================================================
+   SPLASH SCREEN — Premium "Tap to Enter" landing overlay
+   ====================================================================== */
+
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #05140e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0s 0.8s;
+  overflow: hidden;
+}
+
+.splash-screen--fading {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ---- Decorative ornament ---- */
+.splash-ornament {
+  position: absolute;
+  color: rgba(212, 175, 55, 0.3);
+  font-size: 1.2rem;
+  letter-spacing: 0.5em;
+}
+
+.splash-ornament--top {
+  top: 2rem;
+}
+
+.splash-ornament--bottom {
+  bottom: 2rem;
+}
+
+/* ---- Content ---- */
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 0 2rem;
+}
+
+/* ---- Names ---- */
+.splash-names {
+  font-size: clamp(2rem, 8vw, 4.5rem);
+  font-weight: 400;
+  color: #fbf9f4;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  text-shadow: 0 0 40px rgba(212, 175, 55, 0.25);
+}
+
+.splash-ampersand {
+  font-style: italic;
+  color: var(--gold-primary);
+  font-size: 0.85em;
+  margin: 0 0.15em;
+  display: inline-block;
+  text-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+}
+
+/* ---- Divider ---- */
+.splash-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+  margin: 0.5rem 0;
+}
+
+/* ---- Subtitle ---- */
+.splash-subtitle {
+  font-size: clamp(0.85rem, 2.5vw, 1.15rem);
+  color: var(--text-secondary);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+/* ---- Date ---- */
+.splash-date {
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  color: var(--gold-light);
+  letter-spacing: 0.25em;
+  font-weight: 300;
+  margin-top: 0.25rem;
+}
+
+/* ---- Enter button ---- */
+.splash-enter-btn {
+  margin-top: 2.5rem;
+  background: transparent;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--gold-light);
+  padding: 0.85rem 2.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  min-height: 44px;
+}
+
+.splash-enter-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(212, 175, 55, 0.02));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.splash-enter-btn:hover {
+  border-color: rgba(212, 175, 55, 0.7);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.15);
+  transform: scale(1.03);
+}
+
+.splash-enter-btn:hover::before {
+  opacity: 1;
+}
+
+.splash-enter-text {
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-weight: 500;
+}
+
+.splash-enter-arrow {
+  font-size: 1rem;
+  animation: splashBounce 2s ease-in-out infinite;
+}
+
+@keyframes splashBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+/* ---- Floating particles ---- */
+.splash-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.splash-particle {
+  position: absolute;
+  bottom: -10px;
+  width: 3px;
+  height: 3px;
+  background: var(--gold-primary);
+  border-radius: 50%;
+  animation: splashFloat linear infinite;
+}
+
+@keyframes splashFloat {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.1;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(30px);
+    opacity: 0;
+  }
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 640px) {
+  .splash-names {
+    font-size: clamp(1.8rem, 10vw, 3rem);
+  }
+
+  .splash-subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+  }
+
+  .splash-date {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+  }
+
+  .splash-enter-btn {
+    padding: 0.75rem 2rem;
+    margin-top: 2rem;
+  }
+
+  .splash-enter-text {
+    font-size: 0.6rem;
+  }
+
+  .splash-ornament--top {
+    top: 1.5rem;
+  }
+
+  .splash-ornament--bottom {
+    bottom: 1.5rem;
+  }
+}
