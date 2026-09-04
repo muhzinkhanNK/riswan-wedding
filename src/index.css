@@ -1,0 +1,150 @@
+/* ================================================================== */
+/*  Theme Design Tokens: Royal Emerald & Champagne Gold               */
+/* ================================================================== */
+
+:root {
+  --bg-emerald-deep: #05140e;
+  --bg-emerald-dark: #081d15;
+  --bg-emerald-mid: #0e2a1f;
+  --bg-emerald-card: rgba(10, 32, 24, 0.72);
+  --bg-emerald-glass: rgba(12, 40, 30, 0.65);
+  
+  --gold-primary: #d4af37;
+  --gold-light: #f5e6a8;
+  --gold-muted: #b8973b;
+  --gold-glow: rgba(212, 175, 55, 0.35);
+  --gold-subtle: rgba(212, 175, 55, 0.15);
+  
+  --text-primary: #fbf9f4;
+  --text-secondary: #c5d4cd;
+  --text-muted: #8ca398;
+  --text-gold: #e6c875;
+  
+  --border-gold: rgba(212, 175, 55, 0.28);
+  --border-gold-bright: rgba(245, 230, 168, 0.6);
+
+  --font-title: 'Cinzel', serif;
+  --font-serif: 'Cormorant Garamond', 'Instrument Serif', serif;
+  --font-arabic: 'Amiri', serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-menu: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* ================================================================== */
+/*  Global Reset & Base Typography                                     */
+/* ================================================================== */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg-emerald-deep);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(14, 50, 37, 0.6) 0%, transparent 60%),
+    radial-gradient(circle at 10% 40%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(10, 38, 28, 0.8) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img, video {
+  max-width: 100%;
+  display: block;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-emerald-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold-muted);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-primary);
+}
+
+/* ================================================================== */
+/*  Utilities                                                          */
+/* ================================================================== */
+
+.font-instrument {
+  font-family: 'Instrument Serif', serif;
+}
+
+.font-cinzel {
+  font-family: var(--font-title);
+}
+
+.font-cormorant {
+  font-family: var(--font-serif);
+}
+
+.font-arabic {
+  font-family: var(--font-arabic);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #f5e6a8 0%, #d4af37 50%, #aa8521 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border-glow {
+  border: 1px solid var(--border-gold);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.12), inset 0 0 15px rgba(212, 175, 55, 0.05);
+}
+
+/* ================================================================== */
+/*  Mobile safe area & touch optimization                             */
+/* ================================================================== */
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@media (max-width: 640px) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  button, a {
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  a, button {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}

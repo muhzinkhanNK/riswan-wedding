@@ -1,0 +1,45 @@
+/* ======================================================================
+   WALKING BG — fixed fullscreen background behind content sections
+   ====================================================================== */
+
+.walking-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.walking-bg--visible {
+  opacity: 1;
+}
+
+.walking-bg-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  user-select: none;
+  opacity: 0.75;
+}
+
+.walking-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.2) 30%,
+    rgba(0, 0, 0, 0.2) 70%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+/* Ensure all post-intro content sits above the background */
+.walking-bg ~ .couple-section,
+.walking-bg ~ .details-section,
+.walking-bg ~ .events-section,
+.walking-bg ~ .footer {
+  position: relative;
+  z-index: 1;
+}

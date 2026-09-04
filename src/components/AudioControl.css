@@ -1,0 +1,84 @@
+/* ======================================================================
+   FLOATING AUDIO CONTROL — Royal Emerald & Champagne Gold Theme
+   ====================================================================== */
+
+.audio-floating-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1rem;
+  background: var(--bg-emerald-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-gold-bright);
+  border-radius: 9999px;
+  color: var(--gold-light);
+  font-family: var(--font-title);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 
+    0 10px 30px rgba(3, 18, 12, 0.8),
+    0 0 20px rgba(212, 175, 55, 0.25);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.audio-floating-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  background: rgba(14, 42, 31, 0.9);
+  box-shadow: 
+    0 15px 35px rgba(2, 15, 10, 0.9),
+    0 0 30px rgba(212, 175, 55, 0.4);
+}
+
+.audio-floating-btn:active {
+  transform: scale(0.96);
+}
+
+/* Soundwave Equalizer Animation */
+.soundwave-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+  width: 18px;
+}
+
+.soundwave-bar {
+  width: 3px;
+  background: linear-gradient(180deg, #f5e6a8, #d4af37);
+  border-radius: 2px;
+  animation: equalizer 1.2s ease-in-out infinite alternate;
+}
+
+.soundwave-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+.soundwave-bar:nth-child(2) { height: 90%; animation-delay: 0.3s; }
+.soundwave-bar:nth-child(3) { height: 60%; animation-delay: 0.2s; }
+.soundwave-bar:nth-child(4) { height: 100%; animation-delay: 0.4s; }
+
+.audio-floating-btn.paused .soundwave-bar {
+  animation: none;
+  height: 25% !important;
+  opacity: 0.5;
+}
+
+@keyframes equalizer {
+  0% { height: 25%; }
+  50% { height: 100%; }
+  100% { height: 35%; }
+}
+
+@media (max-width: 640px) {
+  .audio-floating-btn {
+    bottom: 1.25rem;
+    right: 1.25rem;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.6rem;
+  }
+}

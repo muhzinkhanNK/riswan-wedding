@@ -1,0 +1,32 @@
+<svg width="260" height="120" viewBox="0 0 260 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBF0B9"/>
+      <stop offset="30%" stop-color="#DFBA67"/>
+      <stop offset="70%" stop-color="#C59B3C"/>
+      <stop offset="100%" stop-color="#8A641A"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Outer Ring Ornament -->
+  <circle cx="130" cy="60" r="54" stroke="url(#goldGrad)" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.6" />
+  <circle cx="130" cy="60" r="48" stroke="url(#goldGrad)" stroke-width="1.8" opacity="0.85" />
+  
+  <!-- Corner Flourishes -->
+  <path d="M 60,60 C 60,40 40,30 20,30 C 40,30 50,20 50,0" stroke="url(#goldGrad)" stroke-width="1.2" fill="none" opacity="0.7"/>
+  <path d="M 200,60 C 200,40 220,30 240,30 C 220,30 210,20 210,0" stroke="url(#goldGrad)" stroke-width="1.2" fill="none" opacity="0.7"/>
+
+  <!-- Monogram R & B -->
+  <text x="130" y="56" text-anchor="middle" font-family="'Cinzel', 'Playfair Display', serif" font-size="28" font-weight="700" fill="url(#goldGrad)" filter="url(#glow)" letter-spacing="2">R &amp; B</text>
+  
+  <!-- Decorative Sub-text in Malayalam & English -->
+  <path d="M 90,72 L 170,72" stroke="url(#goldGrad)" stroke-width="1" opacity="0.5"/>
+  <circle cx="130" cy="72" r="2.5" fill="url(#goldGrad)"/>
+  
+  <text x="130" y="86" text-anchor="middle" font-family="'Plus Jakarta Sans', 'Poppins', sans-serif" font-size="10" font-weight="600" fill="#FBF0B9" letter-spacing="3" opacity="0.95">WEDDING INVITATION</text>
+  <text x="130" y="100" text-anchor="middle" font-family="'Noto Sans Malayalam', 'Anek Malayalam', sans-serif" font-size="11" font-weight="500" fill="url(#goldGrad)" opacity="0.9">മംഗള മുഹൂർത്തം</text>
+</svg>

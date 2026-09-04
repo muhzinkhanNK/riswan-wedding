@@ -1,0 +1,414 @@
+/* ======================================================================
+   COUPLE REVEAL & HERO SECTION — Royal Emerald & Champagne Gold Theme
+   ====================================================================== */
+
+.couple-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  padding: 5rem 1rem 3rem;
+  overflow: hidden;
+}
+
+/* Deep Ambient Emerald & Gold Radial Glow */
+.couple-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  height: 90vh;
+  background: 
+    radial-gradient(ellipse at center, rgba(14, 55, 40, 0.45) 0%, rgba(212, 175, 55, 0.08) 45%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(40px);
+}
+
+/* Main Emerald Glass Card */
+.couple-glass-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3.5rem 2.25rem;
+  background: var(--bg-emerald-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 1.75rem;
+  border: 1px solid var(--border-gold);
+  box-shadow:
+    0 25px 70px rgba(2, 15, 10, 0.85),
+    0 0 80px rgba(212, 175, 55, 0.15),
+    inset 0 1px 1px rgba(245, 230, 168, 0.2);
+  text-align: center;
+}
+
+/* Bismillah SVG Calligraphy */
+.bismillah-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.bismillah-svg {
+  height: 54px;
+  width: auto;
+  filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.6));
+}
+
+/* Quranic Verse Card */
+.quran-verse-card {
+  background: rgba(5, 20, 14, 0.55);
+  border: 1px solid var(--border-gold);
+  border-radius: 1.25rem;
+  padding: 1.6rem 1.85rem;
+  margin: 0 auto 2.25rem;
+  max-width: 580px;
+  box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.04);
+}
+
+.quran-arabic {
+  font-family: var(--font-arabic);
+  font-size: clamp(1.25rem, 3.2vw, 1.7rem);
+  color: var(--gold-light);
+  line-height: 2.2;
+  direction: rtl;
+  margin-bottom: 0.85rem;
+  text-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
+}
+
+.quran-translation {
+  font-family: var(--font-serif);
+  font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+  color: var(--text-secondary);
+  line-height: 1.65;
+  font-style: italic;
+  margin-bottom: 0.75rem;
+  font-weight: 400;
+}
+
+.quran-citation {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  color: var(--gold-primary);
+  opacity: 0.85;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 1.2rem;
+}
+
+.couple-names-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  margin-bottom: 1.25rem;
+}
+
+.groom-name,
+.bride-name {
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 6.5vw, 4.5rem);
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.1;
+  margin: 0;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 35px rgba(212, 175, 55, 0.4);
+}
+
+.ampersand {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  color: var(--gold-primary);
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+}
+
+.hero-divider {
+  color: var(--gold-primary);
+  font-size: 1rem;
+  margin: 1.2rem 0;
+  opacity: 0.85;
+}
+
+.hero-invite-text {
+  font-family: var(--font-sans);
+  font-size: clamp(0.85rem, 1.8vw, 0.98rem);
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin: 0 auto 1.75rem;
+  line-height: 1.65;
+  font-weight: 300;
+}
+
+.hero-date-badge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1.4rem;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid var(--border-gold);
+  border-radius: 9999px;
+  width: fit-content;
+  margin: 0 auto 2.25rem;
+  font-family: var(--font-title);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--gold-light);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+/* Countdown Container — Responsive & Equal Alignment */
+.countdown-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto 2.5rem;
+}
+
+.count-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0.65rem 0.4rem;
+  background: rgba(5, 20, 14, 0.7);
+  border: 1px solid var(--border-gold);
+  border-radius: 0.85rem;
+  box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.05);
+}
+
+.count-num {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 4.2vw, 2.4rem);
+  color: var(--gold-light);
+  line-height: 1;
+  font-weight: 600;
+  text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+.count-label {
+  font-family: var(--font-sans);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+  white-space: nowrap;
+}
+
+.count-colon {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--gold-primary);
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -0.75rem;
+}
+
+/* Swipe Container */
+.swipe-container {
+  max-width: 340px;
+  margin: 0 auto 2.5rem;
+}
+
+.swipe-track {
+  position: relative;
+  height: 54px;
+  background: rgba(5, 20, 14, 0.7);
+  border: 1px solid var(--border-gold);
+  border-radius: 9999px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  cursor: grab;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.swipe-track:active {
+  cursor: grabbing;
+}
+
+.swipe-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.25), rgba(245, 230, 168, 0.6));
+  border-radius: 9999px;
+  pointer-events: none;
+  transition: width 0.1s linear;
+}
+
+.swipe-thumb {
+  position: absolute;
+  left: 4px;
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, #f5e6a8, #d4af37, #aa8521);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+  z-index: 2;
+  transition: transform 0.1s linear;
+}
+
+.swipe-label {
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-title);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Save Date Box */
+.save-date-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.35rem 1.6rem;
+  background: rgba(14, 42, 31, 0.5);
+  border: 1px solid var(--border-gold);
+  border-radius: 1.15rem;
+  text-align: left;
+  box-shadow: inset 0 0 25px rgba(212, 175, 55, 0.05);
+}
+
+.sdt-tag {
+  font-family: var(--font-title);
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold-primary);
+  display: block;
+}
+
+.sdt-title {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin: 0.25rem 0;
+  font-weight: 600;
+}
+
+.sdt-sub {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.btn-calendar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.3rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(245, 230, 168, 0.1));
+  border: 1px solid var(--border-gold-bright);
+  border-radius: 9999px;
+  color: var(--gold-light);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+}
+
+.btn-calendar:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(245, 230, 168, 0.25));
+  color: #ffffff;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .couple-glass-card {
+    padding: 2.25rem 1rem;
+  }
+
+  .bismillah-svg {
+    height: 44px;
+  }
+
+  .quran-verse-card {
+    padding: 1.15rem 1rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .quran-arabic {
+    font-size: 1.25rem;
+    line-height: 2.1;
+    margin-bottom: 0.65rem;
+  }
+
+  .quran-translation {
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .countdown-container {
+    gap: 0.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .count-item {
+    padding: 0.55rem 0.2rem;
+    border-radius: 0.65rem;
+  }
+
+  .count-num {
+    font-size: clamp(1.2rem, 5vw, 1.7rem);
+  }
+
+  .count-label {
+    font-size: 0.48rem;
+    letter-spacing: 0.08em;
+    margin-top: 0.2rem;
+  }
+
+  .count-colon {
+    font-size: 1.1rem;
+    margin-top: -0.55rem;
+  }
+
+  .save-date-box {
+    flex-direction: column;
+    text-align: center;
+  }
+}

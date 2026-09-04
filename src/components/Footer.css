@@ -1,0 +1,55 @@
+/* ======================================================================
+   FOOTER SECTION — Royal Emerald & Champagne Gold Theme
+   ====================================================================== */
+
+.footer-section {
+  position: relative;
+  padding: 5.5rem 1.5rem 4.5rem;
+  background: transparent;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-divider {
+  color: var(--gold-primary);
+  font-size: 1.3rem;
+  margin-bottom: 1.2rem;
+  opacity: 0.9;
+  text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+.footer-sub {
+  font-family: var(--font-title);
+  font-size: 0.68rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 0.85rem;
+}
+
+.footer-couple {
+  font-family: var(--font-serif);
+  font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+  color: var(--text-primary);
+  font-weight: 500;
+  margin: 0 0 0.85rem;
+  text-shadow: 0 0 45px rgba(212, 175, 55, 0.4);
+}
+
+.footer-date {
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .footer-section {
+    padding: 4rem 1rem 3.5rem;
+  }
+}

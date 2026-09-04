@@ -1,0 +1,89 @@
+/* ======================================================================
+   TRAVEL SECTION — Royal Emerald & Champagne Gold Accordions
+   ====================================================================== */
+
+.travel-section {
+  position: relative;
+  padding: 5.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  max-width: 760px;
+  width: 100%;
+}
+
+.accordion-item {
+  background: var(--bg-emerald-card);
+  border: 1px solid var(--border-gold);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 1.35rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(3, 18, 12, 0.6);
+}
+
+.accordion-item.open {
+  border-color: var(--border-gold-bright);
+  box-shadow: 
+    0 15px 40px rgba(2, 15, 10, 0.8),
+    0 0 25px rgba(212, 175, 55, 0.15);
+}
+
+.accordion-trigger {
+  width: 100%;
+  padding: 1.35rem 1.6rem;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+}
+
+.acc-title {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.acc-title svg {
+  color: var(--gold-primary);
+}
+
+.accordion-content {
+  padding: 0 1.6rem 1.35rem;
+  border-top: 1px solid var(--gold-subtle);
+  margin-top: 0.25rem;
+  padding-top: 1.1rem;
+}
+
+.accordion-content p {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 0.6rem;
+}
+
+.accordion-content p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .travel-section {
+    padding: 4rem 1rem;
+  }
+}
