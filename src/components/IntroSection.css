@@ -164,6 +164,91 @@
   opacity: 0;
 }
 
+/* ---- Tap to enter overlay (auto-play mode) ---- */
+.intro-enter {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 1.5rem;
+  cursor: pointer;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  user-select: none;
+}
+
+.intro-enter .intro-names,
+.intro-enter .intro-families {
+  opacity: 1;
+}
+
+.intro-enter .intro-families {
+  margin-top: 1.4rem;
+}
+
+.intro-enter-btn {
+  margin-top: 2.5rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  background: transparent;
+  border: 1px solid rgba(201, 169, 110, 0.55);
+  border-radius: 999px;
+  padding: 1rem 2.4rem;
+  cursor: pointer;
+  transition:
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    transform 0.4s ease;
+  animation: enterPulse 2.4s ease-in-out infinite;
+}
+
+.intro-enter-btn:hover {
+  background: rgba(201, 169, 110, 0.12);
+  border-color: rgba(232, 213, 168, 0.9);
+  box-shadow: 0 0 40px rgba(201, 169, 110, 0.35);
+  transform: scale(1.04);
+}
+
+.intro-enter-btn .label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: #e8d5a8;
+  font-weight: 400;
+}
+
+.intro-enter-btn .arrow {
+  font-size: 0.9rem;
+  color: #c9a96e;
+  animation: introBounceX 1.8s ease-in-out infinite;
+}
+
+@keyframes enterPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(201, 169, 110, 0);
+  }
+  50% {
+    box-shadow: 0 0 45px rgba(201, 169, 110, 0.25);
+  }
+}
+
+@keyframes introBounceX {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(6px); opacity: 1; }
+}
+
 /* ---- Scroll indicator ---- */
 .intro-scroll-indicator {
   position: absolute;
@@ -202,6 +287,21 @@
 }
 
 /* ---- Mobile ---- */
+@media (max-width: 640px) {
+  .intro-enter {
+    padding: 0 1.2rem;
+  }
+
+  .intro-enter .intro-names {
+    font-size: clamp(2.2rem, 11vw, 3.5rem);
+  }
+
+  .intro-enter-btn {
+    margin-top: 2rem;
+    padding: 0.9rem 2rem;
+  }
+}
+
 @media (max-width: 640px) {
   .intro-text {
     padding: 0 1rem;

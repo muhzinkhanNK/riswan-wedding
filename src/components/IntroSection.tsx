@@ -7,6 +7,10 @@ import './IntroSection.css';
 gsap.registerPlugin(ScrollTrigger);
 
 /* ---------- Config ---------- */
+// true  → "TAP TO ENTER" overlay, doors open automatically (no scroll)
+// false → original scroll-scrubbed intro
+const AUTO_PLAY_MODE = true;
+const AUTO_PLAY_DURATION = 6; // seconds for the full door-opening
 const MOBILE_BREAKPOINT = 768;
 const INTRO_TOTAL_FRAMES_PC = 120;
 const INTRO_TOTAL_FRAMES_MOBILE = 210;
@@ -42,14 +46,17 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const familiesRef = useRef<HTMLParagraphElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const tapEnterRef = useRef<HTMLDivElement>(null);
   const fadeOverlayRef = useRef<HTMLDivElement>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
   const loaderBarRef = useRef<HTMLDivElement>(null);
   const loaderTextRef = useRef<HTMLSpanElement>(null);
 
   const [ready, setReady] = useState(false);
+  const [entered, setEntered] = useState(false);
   const [mobileMode, setMobileMode] = useState(() => checkIsMobile());
   const introCompleteRef = useRef(false);
+  const enteredRef = useRef(false);
   const framesRef = useRef<HTMLImageElement[]>([]);
   const currentFrameIdxRef = useRef<number>(0);
 
@@ -164,11 +171,17 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
       });
     }
     const tl = gsap.timeline({ delay: 0.3 });
-    if (familiesRef.current) {
-      tl.to(familiesRef.current, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 0);
-    }
-    if (scrollIndicatorRef.current) {
-      tl.to(scrollIndicatorRef.current, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.2);
+    if (AUTO_PLAY_MODE) {
+      if (tapEnterRef.current) {
+        tl.to(tapEnterRef.current, { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0.1);
+      }
+    } else {
+      if (familiesRef.current) {
+        tl.to(familiesRef.current, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 0);
+      }
+      if (scrollIndicatorRef.current) {
+        tl.to(scrollIndicatorRef.current, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.2);
+      }
     }
     setReady(true);
   }, []);
@@ -216,9 +229,71 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
     };
   }, [mobileMode, renderFrame, showExperience]);
 
-  /* ---- ScrollTrigger: scrub frames + fade overlay ---- */
+  /* ---- Tap to enter (auto-play mode) ---- */
+  const handleEnter = useCallback(() => {
+    if (enteredRef.current) return;
+    enteredRef.current = true;
+    setEntered(true);
+    if (onDoorOpen) onDoorOpen();
+  }, [onDoorOpen]);
+
+  /* ---- Auto-play timeline: scrub all frames without scroll ---- */
   useEffect(() => {
-    if (!ready) return;
+    if (!AUTO_PLAY_MODE || !ready || !entered) return;
+
+    const isMob = checkIsMobile();
+    const count = getIntroTotalFrames(isMob);
+    const proxy = { frame: 0 };
+
+    const tl = gsap.timeline();
+
+    // Fade out tap overlay + intro text as doors begin
+    if (tapEnterRef.current) {
+      tl.to(tapEnterRef.current, { opacity: 0, duration: 0.7, ease: 'power2.out' }, 0);
+    }
+    if (familiesRef.current) {
+      tl.to(familiesRef.current, { opacity: 0, y: -12, duration: 0.6, ease: 'power2.out' }, 0.3);
+    }
+
+    // Advance frames over the timeline
+    tl.to(
+      proxy,
+      {
+        frame: count - 1,
+        duration: AUTO_PLAY_DURATION,
+        ease: 'power1.inOut',
+        onUpdate: () => renderFrame(Math.round(proxy.frame)),
+      },
+      0.4
+    );
+
+    // Fade to black near the end
+    if (fadeOverlayRef.current) {
+      tl.to(fadeOverlayRef.current, { opacity: 1, duration: 1, ease: 'power2.inOut' }, AUTO_PLAY_DURATION - 0.6);
+    }
+
+    // Complete — hide intro section so hero sits directly after the fade-to-black
+    tl.call(
+      () => {
+        renderFrame(count - 1);
+        notifyComplete();
+        // Collapse the intro section so there is zero black gap before the hero
+        if (sectionRef.current) {
+          sectionRef.current.style.display = 'none';
+        }
+      },
+      undefined,
+      AUTO_PLAY_DURATION + 0.6
+    );
+
+    return () => {
+      tl.kill();
+    };
+  }, [AUTO_PLAY_MODE, ready, entered, renderFrame, notifyComplete]);
+
+  /* ---- ScrollTrigger: scrub frames + fade overlay (scroll mode only) ---- */
+  useEffect(() => {
+    if (!ready || AUTO_PLAY_MODE) return;
     const section = sectionRef.current;
     if (!section) return;
 
@@ -313,17 +388,34 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
         <div ref={fadeOverlayRef} className="intro-fade-overlay" />
 
         {/* Text overlay */}
-        <div className="intro-text">
-          <p ref={familiesRef} className="intro-families">
-            {weddingData.invitationText}
-          </p>
-        </div>
+        {AUTO_PLAY_MODE ? (
+          <div ref={tapEnterRef} className="intro-enter" onClick={handleEnter}>
+            <h1 className="intro-names">
+              {weddingData.groom.firstName.toUpperCase()}
+              <span className="amp">&amp;</span>
+              {weddingData.bride.firstName.toUpperCase()}
+            </h1>
+            <p className="intro-families">{weddingData.invitationText}</p>
+            <button type="button" className="intro-enter-btn">
+              <span className="label">TAP TO ENTER</span>
+              <span className="arrow">→</span>
+            </button>
+          </div>
+        ) : (
+          <div className="intro-text">
+            <p ref={familiesRef} className="intro-families">
+              {weddingData.invitationText}
+            </p>
+          </div>
+        )}
 
-        {/* Scroll indicator */}
-        <div ref={scrollIndicatorRef} className="intro-scroll-indicator">
-          <span className="label">SCROLL TO ENTER</span>
-          <span className="arrow">↓</span>
-        </div>
+        {/* Scroll indicator (scroll mode only) */}
+        {!AUTO_PLAY_MODE && (
+          <div ref={scrollIndicatorRef} className="intro-scroll-indicator">
+            <span className="label">SCROLL TO ENTER</span>
+            <span className="arrow">↓</span>
+          </div>
+        )}
       </section>
     </>
   );

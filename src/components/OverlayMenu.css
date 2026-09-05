@@ -1,0 +1,53 @@
+/* ======================================================================
+   OVERLAY MENU — full-screen navigation overlay
+   (Written in plain CSS — this project has no Tailwind installed)
+   ====================================================================== */
+
+.overlay-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(5, 20, 14, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 700ms var(--ease-menu), visibility 0s;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.overlay-menu--open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.overlay-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 1.5rem;
+}
+
+.overlay-link {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2rem, 6vw, 3.75rem);
+  color: #fff;
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 500ms var(--ease-entrance),
+              transform 500ms var(--ease-entrance),
+              color 300ms ease;
+}
+
+.overlay-menu--open .overlay-link {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.overlay-link:hover {
+  color: rgba(245, 230, 168, 0.9);
+}

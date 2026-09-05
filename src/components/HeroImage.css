@@ -1,0 +1,110 @@
+/* ======================================================================
+   HERO IMAGE — full-screen couple scene right after the intro
+   Bridges the intro's fade-to-black into the content seamlessly.
+   ====================================================================== */
+
+.hero-image-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: #000;
+}
+
+.hero-image-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('/images/hero-desktop.webp');
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+  opacity: 0;
+}
+
+/* ---- Soft cinematic grading ---- */
+.hero-image-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.45) 100%),
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.35) 0%,
+      transparent 28%,
+      transparent 62%,
+      var(--bg-emerald-deep) 100%
+    );
+}
+
+/* ---- Centered caption ---- */
+.hero-image-caption {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 1.5rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-caption-divider {
+  color: var(--gold-primary);
+  font-size: 1rem;
+  opacity: 0.85;
+  margin-bottom: 1.1rem;
+  text-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+}
+
+.hero-caption-names {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2.6rem, 7.5vw, 5.5rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.05;
+  color: #fff;
+  margin: 0;
+  text-shadow:
+    0 0 80px rgba(201, 169, 110, 0.45),
+    0 0 160px rgba(201, 169, 110, 0.18),
+    0 4px 40px rgba(0, 0, 0, 0.85);
+}
+
+.hero-caption-names .amp {
+  font-style: italic;
+  color: #c9a96e;
+  margin: 0 0.14em;
+  text-shadow: 0 0 30px rgba(212, 175, 55, 0.55);
+}
+
+.hero-caption-sub {
+  margin-top: 1.2rem;
+  font-family: var(--font-sans);
+  font-size: clamp(0.55rem, 1.8vw, 0.7rem);
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 300;
+}
+
+/* ---- Mobile: portrait couple image, no ugly crop ---- */
+@media (max-width: 768px) {
+  .hero-image-bg {
+    background-image: url('/images/hero-mobile.webp');
+    background-position: center 38%;
+  }
+
+  .hero-caption-names {
+    font-size: clamp(2.1rem, 11vw, 3.4rem);
+  }
+
+  .hero-caption-sub {
+    letter-spacing: 0.4em;
+  }
+}

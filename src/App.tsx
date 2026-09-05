@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Navbar } from './components/Navbar';
 import { OverlayMenu } from './components/OverlayMenu';
 import { IntroSection } from './components/IntroSection';
+import { HeroImage } from './components/HeroImage';
 import { WalkingBg } from './components/WalkingBg';
 import { CoupleReveal } from './components/CoupleReveal';
 import { WeddingEvents } from './components/WeddingEvents';
@@ -32,8 +33,12 @@ const WALKING_FRAMES_MOBILE = Array.from({ length: 72 }, (_, i) =>
   `/images/new/walkingmobile/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
 );
 
+/* ---- Hero images (bridge intro -> content) ---- */
+const HERO_IMAGES = ['/images/hero-desktop.webp', '/images/hero-mobile.webp'];
+
 function getMobilePaths(): string[] {
   const paths: string[] = [];
+  paths.push(...HERO_IMAGES);
   paths.push(...INTRO_FRAMES_MOBILE);
   paths.push(...WALKING_FRAMES_MOBILE);
   return paths;
@@ -41,6 +46,7 @@ function getMobilePaths(): string[] {
 
 function getDesktopPaths(): string[] {
   const paths: string[] = [];
+  paths.push(...HERO_IMAGES);
   paths.push(...INTRO_FRAMES_PC);
   paths.push(...WALKING_FRAMES_PC);
   return paths;
@@ -111,6 +117,15 @@ function App() {
     if (userMutedRef.current) return;
     playAudio();
   }, [playAudio]);
+
+  /* ---- Stable callbacks for IntroSection (prevents re-renders restarting the timeline) ---- */
+  const handleIntroComplete = useCallback(() => {
+    setIntroDone(true);
+  }, []);
+
+  const handleIntroReset = useCallback(() => {
+    setIntroDone(false);
+  }, []);
 
   const lenisRef = useRef<Lenis | null>(null);
 
@@ -200,8 +215,8 @@ function App() {
 
       {assetsReady && (
         <IntroSection
-          onIntroComplete={() => setIntroDone(true)}
-          onIntroReset={() => setIntroDone(false)}
+          onIntroComplete={handleIntroComplete}
+          onIntroReset={handleIntroReset}
           onDoorOpen={handleDoorOpen}
         />
       )}
@@ -209,6 +224,7 @@ function App() {
       <WalkingBg visible={introDone} />
 
       <div className={`post-intro ${introDone ? 'post-intro--visible' : ''}`}>
+        <HeroImage />
         <CoupleReveal />
         <WeddingEvents />
         <VenueSection />
