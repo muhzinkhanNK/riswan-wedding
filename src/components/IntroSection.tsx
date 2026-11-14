@@ -56,6 +56,18 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
   const [entered, setEntered] = useState(false);
   const [mobileMode, setMobileMode] = useState(() => checkIsMobile());
   const introCompleteRef = useRef(false);
+
+  // Prevent scrolling while intro overlay (auto‑play) is visible
+  useEffect(() => {
+    if (AUTO_PLAY_MODE && !entered) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [entered]);
   const enteredRef = useRef(false);
   const framesRef = useRef<HTMLImageElement[]>([]);
   const currentFrameIdxRef = useRef<number>(0);
