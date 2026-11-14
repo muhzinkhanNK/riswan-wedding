@@ -51,6 +51,8 @@
   overflow: hidden;
   background: #000;
   z-index: 2;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 /* ---- Frame sequence layer ---- */
@@ -70,7 +72,7 @@
   user-select: none;
   transform: translateZ(0);
   will-change: transform;
-  touch-action: pan-y;
+  touch-action: none;
 }
 
 /* ---- Video scrub (mobile) ---- */

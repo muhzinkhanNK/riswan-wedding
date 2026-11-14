@@ -54,31 +54,52 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
 
   const [ready, setReady] = useState(false);
   const [entered, setEntered] = useState(false);
+  const [introFinished, setIntroFinished] = useState(false);
   const [mobileMode, setMobileMode] = useState(() => checkIsMobile());
   const introCompleteRef = useRef(false);
 
-  // Prevent scrolling while intro overlay (auto‑play) is visible
+  // Prevent scrolling during entire intro (tap to enter AND the animation until hero section appears)
   useEffect(() => {
+    if (!AUTO_PLAY_MODE || introFinished) {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.documentElement.style.overflow = '';
+      return;
+    }
+
+    const preventScroll = (e: Event) => {
+      e.preventDefault();
+    };
+
+    const preventKeyScroll = (e: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'Space', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.code)) {
+        e.preventDefault();
+      }
+    };
+
     const body = document.body;
     const html = document.documentElement;
-    if (AUTO_PLAY_MODE && !entered) {
-      body.style.overflow = 'hidden';
-      body.style.position = 'fixed';
-      body.style.width = '100%';
-      html.style.overflow = 'hidden';
-    } else {
-      body.style.overflow = '';
-      body.style.position = '';
-      body.style.width = '';
-      html.style.overflow = '';
-    }
+
+    body.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    body.style.width = '100%';
+    html.style.overflow = 'hidden';
+
+    window.addEventListener('wheel', preventScroll, { passive: false });
+    window.addEventListener('touchmove', preventScroll, { passive: false });
+    window.addEventListener('keydown', preventKeyScroll);
+
     return () => {
       body.style.overflow = '';
       body.style.position = '';
       body.style.width = '';
       html.style.overflow = '';
+      window.removeEventListener('wheel', preventScroll);
+      window.removeEventListener('touchmove', preventScroll);
+      window.removeEventListener('keydown', preventKeyScroll);
     };
-  }, [entered]);
+  }, [introFinished]);
   const enteredRef = useRef(false);
   const framesRef = useRef<HTMLImageElement[]>([]);
   const currentFrameIdxRef = useRef<number>(0);
@@ -300,6 +321,7 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
       () => {
         renderFrame(count - 1);
         notifyComplete();
+        setIntroFinished(true);
         // Collapse the intro section so there is zero black gap before the hero
         if (sectionRef.current) {
           sectionRef.current.style.display = 'none';

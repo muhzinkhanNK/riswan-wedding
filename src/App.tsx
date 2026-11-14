@@ -146,6 +146,14 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!introDone) {
+      lenisRef.current?.stop();
+    } else {
+      lenisRef.current?.start();
+    }
+  }, [introDone]);
+
   /* ---- Preload all images before showing anything ---- */
   const allLoadedRef = useRef(false);
 
