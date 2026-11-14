@@ -64,6 +64,9 @@ export function HeroImage() {
         </h2>
         <span className="hero-caption-sub">THE JOURNEY BEGINS</span>
       </div>
+      <a href="#next-section" className="hero-scroll-arrow" aria-label="Scroll down">
+        <span></span>
+      </a>
     </section>
   );
 }

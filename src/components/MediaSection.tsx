@@ -78,7 +78,7 @@ export function MediaSection() {
             <p>Download the high-resolution invitation card for sharing.</p>
             <a
               href={weddingData.digitalCardUrl}
-              download="Rizwan_and_Binsha_Wedding_Card.png"
+              download="Rizwan_and_Binsha_Wedding_Card.jpg"
               className="btn-download"
             >
               <Download className="w-4 h-4" />

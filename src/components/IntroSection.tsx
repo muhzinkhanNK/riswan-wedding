@@ -59,13 +59,24 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
 
   // Prevent scrolling while intro overlay (auto‑play) is visible
   useEffect(() => {
+    const body = document.body;
+    const html = document.documentElement;
     if (AUTO_PLAY_MODE && !entered) {
-      document.body.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      body.style.position = 'fixed';
+      body.style.width = '100%';
+      html.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = '';
+      body.style.overflow = '';
+      body.style.position = '';
+      body.style.width = '';
+      html.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow = '';
+      body.style.overflow = '';
+      body.style.position = '';
+      body.style.width = '';
+      html.style.overflow = '';
     };
   }, [entered]);
   const enteredRef = useRef(false);

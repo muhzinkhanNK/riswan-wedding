@@ -23,8 +23,8 @@ export interface WeddingContact {
 }
 
 export const weddingData = {
-  groom: { firstName: 'Rizwan', lastName: 'Mohamed', fullName: 'Rizwan Mohamed' },
-  bride: { firstName: 'Binsha', lastName: 'Azeez', fullName: 'Binsha Azeez' },
+  groom: { firstName: 'Rizwan', lastName: 'Mohamed', fullName: 'Mohammed Rizwan M.S' },
+  bride: { firstName: 'Binsha', lastName: 'Azeez', fullName: 'Binsha N' },
   displayNames: 'RIZWAN & BINSHA',
   tagline: 'A sacred union bound by faith, love, and togetherness',
   invitationText: 'Together with their families',
@@ -53,7 +53,7 @@ export const weddingData = {
       badge: 'CEREMONY',
       subtitle: 'Wedding Ceremony',
       date: 'Sunday, 27 December 2026',
-      time: '12:00 PM IST',
+      time: 'Between 12:00 PM & 12:30 PM (1448 Rajab 18)',
       venue: 'Pournami Auditorium',
       address: 'Kuttichira, Kollam, Kerala',
       description: 'The sacred marriage ceremony and midday feast.',
@@ -148,7 +148,7 @@ export const weddingData = {
       ],
     },
   ],
-  digitalCardUrl: '/assets/wedding-card.png',
+  digitalCardUrl: '/assets/wedding-card.jpg',
   location: 'Kollam, Kerala',
 };
 
