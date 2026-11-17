@@ -98,39 +98,50 @@ export function IntroSection({ onIntroComplete, onDoorOpen }: IntroSectionProps)
     return () => window.removeEventListener('resize', handleResize);
   }, [mobileMode]);
 
-  /* ---- Reveal "Tap to Enter" overlay immediately ---- */
+  /* ---- Reveal "Tap to Enter" overlay & prime video buffering immediately ---- */
   useEffect(() => {
     if (loaderRef.current) {
       loaderRef.current.style.display = 'none';
     }
     if (tapEnterRef.current) {
-      gsap.to(tapEnterRef.current, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.2 });
+      gsap.to(tapEnterRef.current, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.1 });
+    }
+    const video = videoRef.current;
+    if (video) {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.load(); // Prime initial frames into buffer
     }
     setReady(true);
   }, []);
 
-  /* ---- Tap to enter handler ---- */
+  /* ---- Tap to enter handler: triggers video playback synchronously for zero-latency start ---- */
   const handleEnter = useCallback(() => {
     if (enteredRef.current) return;
     enteredRef.current = true;
     setEntered(true);
-  }, []);
 
-  /* ---- Video playback & completion ---- */
+    const video = videoRef.current;
+    if (video) {
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    }
+
+    if (onDoorOpen) onDoorOpen();
+
+    // Fade out the tap overlay instantly
+    if (tapEnterRef.current) {
+      gsap.to(tapEnterRef.current, { opacity: 0, duration: 0.5, ease: 'power2.out' });
+    }
+  }, [onDoorOpen]);
+
+  /* ---- Video completion & transition to content ---- */
   useEffect(() => {
     if (!ready || !entered) return;
 
     const video = videoRef.current;
     if (!video) return;
-
-    video.currentTime = 0;
-    video.play().catch(() => {});
-    if (onDoorOpen) onDoorOpen();
-
-    // Fade out the tap overlay
-    if (tapEnterRef.current) {
-      gsap.to(tapEnterRef.current, { opacity: 0, duration: 0.6, ease: 'power2.out' });
-    }
 
     const handleEnded = () => {
       if (fadeOverlayRef.current) {
@@ -153,7 +164,7 @@ export function IntroSection({ onIntroComplete, onDoorOpen }: IntroSectionProps)
 
     video.addEventListener('ended', handleEnded, { once: true });
     return () => video.removeEventListener('ended', handleEnded);
-  }, [ready, entered, onDoorOpen, notifyComplete]);
+  }, [ready, entered, notifyComplete]);
 
   return (
     <>

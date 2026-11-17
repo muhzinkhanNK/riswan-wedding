@@ -41,8 +41,6 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [loadingPercent, setLoadingPercent] = useState(0);
-  const [assetsReady, setAssetsReady] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isPlayingRef = useRef(false);
@@ -139,49 +137,17 @@ function App() {
     }
   }, [introDone]);
 
-  /* ---- Preload all images before showing anything ---- */
-  const allLoadedRef = useRef(false);
-
+  /* ---- Background preload images silently without blocking UI ---- */
   useEffect(() => {
     const paths = window.innerWidth < 768 ? getMobilePaths() : getDesktopPaths();
-    const total = paths.length;
-    let loaded = 0;
-
     paths.forEach((src) => {
       const img = new Image();
-      img.onload = img.onerror = () => {
-        loaded++;
-        const pct = Math.round((loaded / total) * 100);
-        setLoadingPercent(pct);
-        if (pct >= 100 && !allLoadedRef.current) {
-          allLoadedRef.current = true;
-          setTimeout(() => setAssetsReady(true), 400);
-        }
-      };
       img.src = src;
     });
-
-    return () => {};
   }, []);
 
   return (
     <div className="bg-[#05140e] min-h-screen">
-      {!assetsReady && (
-        <div className="preloader">
-          <div className="preloader-inner">
-            <h1 className="preloader-names font-cinzel">
-              RIZWAN{' '}
-              <span className="preloader-amp">&amp;</span>{' '}
-              BINSHA
-            </h1>
-            <div className="preloader-bar-track">
-              <div className="preloader-bar-fill" style={{ width: `${loadingPercent}%` }} />
-            </div>
-            <span className="preloader-text">{loadingPercent}%</span>
-          </div>
-        </div>
-      )}
-
       <audio
         ref={audioRef}
         src="/audio/nikah-nasheed.mp3"
@@ -197,7 +163,7 @@ function App() {
         }}
       />
 
-      {assetsReady && <AudioControl isPlaying={isPlaying} onToggle={toggleAudio} />}
+      <AudioControl isPlaying={isPlaying} onToggle={toggleAudio} />
 
       {introDone && (
         <>
@@ -206,13 +172,11 @@ function App() {
         </>
       )}
 
-      {assetsReady && (
-        <IntroSection
-          onIntroComplete={handleIntroComplete}
-          onIntroReset={handleIntroReset}
-          onDoorOpen={handleDoorOpen}
-        />
-      )}
+      <IntroSection
+        onIntroComplete={handleIntroComplete}
+        onIntroReset={handleIntroReset}
+        onDoorOpen={handleDoorOpen}
+      />
 
       <WalkingBg visible={introDone} />
       <PetalRain introDone={introDone} />
