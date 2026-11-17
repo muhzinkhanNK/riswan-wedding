@@ -176,73 +176,146 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   cursor: pointer;
   opacity: 0;
   background: radial-gradient(
     ellipse at center,
-    rgba(0, 0, 0, 0.15) 0%,
-    rgba(0, 0, 0, 0.55) 100%
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.6) 100%
   );
   user-select: none;
 }
 
-.intro-enter .intro-names,
+/* Names — mixed case, larger, serif */
+.intro-enter .intro-names {
+  opacity: 1;
+  font-size: clamp(3rem, 10vw, 7rem);
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: none;
+}
+
+/* Ampersand */
+.intro-enter .intro-names .amp {
+  font-style: italic;
+  color: #c9a96e;
+  margin: 0 0.18em;
+  font-size: 0.75em;
+}
+
+/* Invitation family line — above the names */
 .intro-enter .intro-families {
   opacity: 1;
+  margin-top: 0;
+  margin-bottom: 0.6rem;
+  font-size: clamp(0.5rem, 1.4vw, 0.65rem);
+  letter-spacing: 0.4em;
+  color: rgba(255, 255, 255, 0.45);
+  order: -1; /* sits above names */
 }
 
-.intro-enter .intro-families {
-  margin-top: 1.4rem;
+/* Date line — below names */
+.intro-enter-date {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(0.5rem, 1.3vw, 0.62rem);
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: #c9a96e;
+  font-weight: 300;
+  margin-top: 0.5rem;
 }
 
-.intro-enter-btn {
-  margin-top: 2.5rem;
-  display: inline-flex;
-  flex-direction: column;
+/* Ornament row — thin lines + diamond */
+.intro-enter-ornament {
+  display: flex;
   align-items: center;
   gap: 0.6rem;
-  background: transparent;
-  border: 1px solid rgba(201, 169, 110, 0.55);
-  border-radius: 999px;
-  padding: 1rem 2.4rem;
-  cursor: pointer;
-  transition:
-    background 0.4s ease,
-    border-color 0.4s ease,
-    box-shadow 0.4s ease,
-    transform 0.4s ease;
-  animation: enterPulse 2.4s ease-in-out infinite;
+  margin: 1rem 0 0.6rem;
 }
 
-.intro-enter-btn:hover {
-  background: rgba(201, 169, 110, 0.12);
-  border-color: rgba(232, 213, 168, 0.9);
-  box-shadow: 0 0 40px rgba(201, 169, 110, 0.35);
-  transform: scale(1.04);
+.intro-enter-ornament.bottom {
+  margin: 0.6rem 0 0;
 }
 
-.intro-enter-btn .label {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.45em;
-  text-transform: uppercase;
-  color: #e8d5a8;
-  font-weight: 400;
+.ornament-line {
+  display: block;
+  width: clamp(40px, 8vw, 90px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.6), transparent);
 }
 
-.intro-enter-btn .arrow {
-  font-size: 0.9rem;
+.ornament-diamond {
+  font-size: 0.35rem;
   color: #c9a96e;
-  animation: introBounceX 1.8s ease-in-out infinite;
+  opacity: 0.75;
+  letter-spacing: 0;
 }
 
-@keyframes enterPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 rgba(201, 169, 110, 0);
+/* ---- CTA: circular enter button ---- */
+.intro-enter-btn {
+  position: relative;
+  margin-top: 2.2rem;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Static outer ring */
+.intro-enter-btn-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 169, 110, 0.55);
+  transition: border-color 0.4s ease, transform 0.4s ease;
+}
+
+/* Pulsing ring */
+.intro-enter-btn-ring.pulse {
+  animation: ringPulse 2.4s ease-out infinite;
+  border-color: rgba(201, 169, 110, 0.4);
+}
+
+.intro-enter-btn-label {
+  position: relative;
+  z-index: 1;
+  font-family: 'Instrument Serif', serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: #e8d5a8;
+  transition: color 0.3s ease;
+}
+
+.intro-enter-btn:hover .intro-enter-btn-ring:not(.pulse) {
+  border-color: rgba(232, 213, 168, 0.95);
+  transform: scale(1.1);
+}
+
+.intro-enter-btn:hover .intro-enter-btn-label {
+  color: #fff;
+}
+
+@keyframes ringPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
   }
-  50% {
-    box-shadow: 0 0 45px rgba(201, 169, 110, 0.25);
+  70% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
   }
 }
 
@@ -295,12 +368,31 @@
   }
 
   .intro-enter .intro-names {
-    font-size: clamp(2.2rem, 11vw, 3.5rem);
+    font-size: clamp(2.4rem, 12vw, 4rem);
   }
 
   .intro-enter-btn {
-    margin-top: 2rem;
-    padding: 0.9rem 2rem;
+    margin-top: 1.8rem;
+    width: 78px;
+    height: 78px;
+  }
+
+  .intro-enter-btn-label {
+    font-size: 0.78rem;
+  }
+
+  .intro-enter-date {
+    font-size: 0.5rem;
+    letter-spacing: 0.3em;
+  }
+
+  .intro-enter-ornament {
+    gap: 0.5rem;
+    margin: 0.7rem 0 0.4rem;
+  }
+
+  .ornament-line {
+    width: 36px;
   }
 }
 

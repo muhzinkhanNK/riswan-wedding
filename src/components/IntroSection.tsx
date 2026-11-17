@@ -435,15 +435,38 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
         {/* Text overlay */}
         {AUTO_PLAY_MODE ? (
           <div ref={tapEnterRef} className="intro-enter" onClick={handleEnter}>
-            <h1 className="intro-names">
-              {weddingData.groom.firstName.toUpperCase()}
-              <span className="amp">&amp;</span>
-              {weddingData.bride.firstName.toUpperCase()}
-            </h1>
+            {/* Top ornament */}
+            <div className="intro-enter-ornament">
+              <span className="ornament-line" />
+              <span className="ornament-diamond">◆</span>
+              <span className="ornament-line" />
+            </div>
+
+            {/* Families / invitation line */}
             <p className="intro-families">{weddingData.invitationText}</p>
+
+            {/* Names */}
+            <h1 className="intro-names">
+              {weddingData.groom.firstName}
+              <span className="amp">&amp;</span>
+              {weddingData.bride.firstName}
+            </h1>
+
+            {/* Wedding date */}
+            <p className="intro-enter-date">{weddingData.date.full}</p>
+
+            {/* Bottom ornament */}
+            <div className="intro-enter-ornament bottom">
+              <span className="ornament-line" />
+              <span className="ornament-diamond">◆</span>
+              <span className="ornament-line" />
+            </div>
+
+            {/* CTA Button */}
             <button type="button" className="intro-enter-btn">
-              <span className="label">TAP TO ENTER</span>
-              <span className="arrow">→</span>
+              <span className="intro-enter-btn-ring" />
+              <span className="intro-enter-btn-ring pulse" />
+              <span className="intro-enter-btn-label">Enter</span>
             </button>
           </div>
         ) : (
