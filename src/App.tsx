@@ -19,42 +19,23 @@ import './App.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ---- Image paths to preload ---- */
-const INTRO_FRAMES_PC = Array.from({ length: 120 }, (_, i) =>
-  `/images/new/intropc/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
-);
-const INTRO_FRAMES_MOBILE = Array.from({ length: 210 }, (_, i) =>
-  `/images/new/newintromobileg/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
-);
-const WALKING_FRAMES_PC = Array.from({ length: 117 }, (_, i) =>
-  `/images/new/walkingpc/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
-);
-const WALKING_FRAMES_MOBILE = Array.from({ length: 72 }, (_, i) =>
-  `/images/new/walkingmobile/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
-);
+/* ---- Initial Critical Assets to preload (loads in ~1-2 seconds) ---- */
+const INITIAL_PRELOAD_COUNT = 15;
 
-/* ---- Hero images (bridge intro -> content) ---- */
-const HERO_IMAGES = ['/images/hero-desktop.webp', '/images/hero-mobile.webp'];
-
-function getMobilePaths(): string[] {
+function getInitialPaths(isMobile: boolean): string[] {
   const paths: string[] = [];
-  paths.push(...HERO_IMAGES);
-  paths.push(...INTRO_FRAMES_MOBILE);
-  paths.push(...WALKING_FRAMES_MOBILE);
-  return paths;
-}
-
-function getDesktopPaths(): string[] {
-  const paths: string[] = [];
-  paths.push(...HERO_IMAGES);
-  paths.push(...INTRO_FRAMES_PC);
-  paths.push(...WALKING_FRAMES_PC);
+  paths.push(isMobile ? '/images/hero-mobile.webp' : '/images/hero-desktop.webp');
+  const folder = isMobile ? '/images/new/newintromobileg' : '/images/new/intropc';
+  for (let i = 1; i <= INITIAL_PRELOAD_COUNT; i++) {
+    paths.push(`${folder}/ezgif-frame-${String(i).padStart(3, '0')}.webp`);
+  }
   return paths;
 }
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [introDone, setIntroDone] = useState(false);
+  const [doorOpened, setDoorOpened] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [loadingPercent, setLoadingPercent] = useState(0);
   const [assetsReady, setAssetsReady] = useState(false);
@@ -114,6 +95,7 @@ function App() {
   }, [playAudio]);
 
   const handleDoorOpen = useCallback(() => {
+    setDoorOpened(true);
     if (userMutedRef.current) return;
     playAudio();
   }, [playAudio]);
@@ -154,11 +136,12 @@ function App() {
     }
   }, [introDone]);
 
-  /* ---- Preload all images before showing anything ---- */
+  /* ---- Preload initial critical images (~1-2s load) ---- */
   const allLoadedRef = useRef(false);
 
   useEffect(() => {
-    const paths = window.innerWidth < 768 ? getMobilePaths() : getDesktopPaths();
+    const isMobile = window.innerWidth < 768;
+    const paths = getInitialPaths(isMobile);
     const total = paths.length;
     let loaded = 0;
 
@@ -170,7 +153,7 @@ function App() {
         setLoadingPercent(pct);
         if (pct >= 100 && !allLoadedRef.current) {
           allLoadedRef.current = true;
-          setTimeout(() => setAssetsReady(true), 400);
+          setTimeout(() => setAssetsReady(true), 300);
         }
       };
       img.src = src;
@@ -229,7 +212,7 @@ function App() {
         />
       )}
 
-      <WalkingBg visible={introDone} />
+      <WalkingBg startLoading={doorOpened || introDone} visible={introDone} />
 
       <div className={`post-intro ${introDone ? 'post-intro--visible' : ''}`}>
         <HeroImage />

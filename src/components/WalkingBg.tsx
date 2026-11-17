@@ -52,9 +52,10 @@ function drawImageCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
 /* ---------- Component ---------- */
 interface WalkingBgProps {
   visible?: boolean;
+  startLoading?: boolean;
 }
 
-export function WalkingBg({ visible = false }: WalkingBgProps) {
+export function WalkingBg({ visible = false, startLoading = false }: WalkingBgProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ready, setReady] = useState(false);
   const [mobileMode, setMobileMode] = useState(() => checkIsMobile());
@@ -104,8 +105,10 @@ export function WalkingBg({ visible = false }: WalkingBgProps) {
     return () => window.removeEventListener('resize', handleResize);
   }, [mobileMode, renderFrame]);
 
-  /* ---- Preload frames ---- */
+  /* ---- Preload frames (deferred until door opens or visible) ---- */
   useEffect(() => {
+    if (!startLoading && !visible) return;
+
     const images: HTMLImageElement[] = [];
     let loaded = 0;
     let firstBatchDone = false;

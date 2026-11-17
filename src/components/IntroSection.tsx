@@ -230,45 +230,69 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
     setReady(true);
   }, []);
 
-  /* ---- Preload frames ---- */
+  /* ---- Preload frames progressively ---- */
   useEffect(() => {
-    const images: HTMLImageElement[] = [];
-    let loaded = 0;
-    let firstBatchDone = false;
     const count = getIntroTotalFrames(mobileMode);
+    const images: HTMLImageElement[] = new Array(count);
+    let initialLoaded = 0;
+    let firstBatchDone = false;
 
-    for (let i = 1; i <= count; i++) {
-      const img = new Image();
+    // Allocate Image objects
+    for (let i = 0; i < count; i++) {
+      images[i] = new Image();
+    }
+    framesRef.current = images;
+
+    // 1. Load initial critical batch first
+    for (let i = 1; i <= INITIAL_BATCH; i++) {
+      const img = images[i - 1];
       img.src = getIntroFramePath(mobileMode, i);
-      img.onload = () => {
-        loaded++;
-        const pct = Math.round((loaded / count) * 100);
-        if (loaderBarRef.current) loaderBarRef.current.style.width = `${pct}%`;
-        if (loaderTextRef.current) loaderTextRef.current.textContent = `${pct}%`;
-
-        if (!firstBatchDone && loaded >= INITIAL_BATCH) {
+      img.onload = img.onerror = () => {
+        initialLoaded++;
+        if (!firstBatchDone && initialLoaded >= INITIAL_BATCH) {
           firstBatchDone = true;
           renderFrame(0);
           showExperience();
+          // 2. Stream remaining frames in background
+          streamRemainingFrames();
         }
       };
-      img.onerror = () => {
-        loaded++;
-        if (!firstBatchDone && loaded >= INITIAL_BATCH) {
-          firstBatchDone = true;
-          renderFrame(0);
-          showExperience();
-        }
-      };
-      images.push(img);
     }
 
-    framesRef.current = images;
+    // 2. Stream remaining frames in smooth chunks to prevent network choking
+    const streamRemainingFrames = () => {
+      let currentIdx = INITIAL_BATCH + 1;
+      const CHUNK_SIZE = 15;
+
+      const loadNextChunk = () => {
+        if (currentIdx > count) return;
+        const end = Math.min(currentIdx + CHUNK_SIZE, count + 1);
+        let chunkLoaded = 0;
+        const totalInChunk = end - currentIdx;
+
+        for (let j = currentIdx; j < end; j++) {
+          const img = images[j - 1];
+          img.src = getIntroFramePath(mobileMode, j);
+          img.onload = img.onerror = () => {
+            chunkLoaded++;
+            if (chunkLoaded >= totalInChunk) {
+              currentIdx = end;
+              // Schedule next chunk slightly to keep main thread smooth
+              setTimeout(loadNextChunk, 20);
+            }
+          };
+        }
+      };
+
+      loadNextChunk();
+    };
 
     return () => {
       images.forEach((img) => {
-        img.onload = null;
-        img.onerror = null;
+        if (img) {
+          img.onload = null;
+          img.onerror = null;
+        }
       });
     };
   }, [mobileMode, renderFrame, showExperience]);
