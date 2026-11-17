@@ -20,7 +20,7 @@
   height: 100%;
   display: block;
   user-select: none;
-  opacity: 0.75;
+  opacity: 0.9;
 }
 
 .walking-bg-overlay {
@@ -28,10 +28,10 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.55) 0%,
-    rgba(0, 0, 0, 0.2) 30%,
-    rgba(0, 0, 0, 0.2) 70%,
-    rgba(0, 0, 0, 0.6) 100%
+    rgba(5, 20, 14, 0.45) 0%,
+    rgba(5, 20, 14, 0.15) 30%,
+    rgba(5, 20, 14, 0.15) 70%,
+    rgba(5, 20, 14, 0.55) 100%
   );
 }
 

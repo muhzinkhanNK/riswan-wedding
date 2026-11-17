@@ -29,7 +29,7 @@ const INTRO_FRAMES_MOBILE = Array.from({ length: 210 }, (_, i) =>
 const WALKING_FRAMES_PC = Array.from({ length: 117 }, (_, i) =>
   `/images/new/walkingpc/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
 );
-const WALKING_FRAMES_MOBILE = Array.from({ length: 72 }, (_, i) =>
+const WALKING_FRAMES_MOBILE = Array.from({ length: 117 }, (_, i) =>
   `/images/new/walkingmobile/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
 );
 

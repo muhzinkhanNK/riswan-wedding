@@ -25,7 +25,7 @@ function drawImageCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
   const ch = canvas.height;
   const iw = img.naturalWidth || img.width;
   const ih = img.naturalHeight || img.height;
-  if (!iw || !ih) return;
+  if (!iw || !ih || !cw || !ch) return;
 
   const canvasRatio = cw / ch;
   const imgRatio = iw / ih;
@@ -45,6 +45,8 @@ function drawImageCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
     offsetY = (ch - renderH) / 2;
   }
 
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   ctx.clearRect(0, 0, cw, ch);
   ctx.drawImage(img, offsetX, offsetY, renderW, renderH);
 }
@@ -74,11 +76,12 @@ export function WalkingBg({ visible = false }: WalkingBgProps) {
     if (img && img.complete && img.naturalWidth > 0) {
       drawImageCover(ctx, img);
     } else if (img) {
-      img.onload = () => {
+      const onImgLoad = () => {
         if (currentFrameIdxRef.current === frameIdx) {
           drawImageCover(ctx, img);
         }
       };
+      img.addEventListener('load', onImgLoad, { once: true });
     }
   }, []);
 
@@ -107,32 +110,23 @@ export function WalkingBg({ visible = false }: WalkingBgProps) {
   /* ---- Preload frames ---- */
   useEffect(() => {
     const images: HTMLImageElement[] = [];
+    framesRef.current = images;
     let loaded = 0;
     let firstBatchDone = false;
 
     for (let i = 1; i <= WALKING_TOTAL_FRAMES; i++) {
       const img = new Image();
       img.src = getWalkingFramePath(mobileMode, i);
-      img.onload = () => {
+      img.onload = img.onerror = () => {
         loaded++;
         if (!firstBatchDone && loaded >= INITIAL_BATCH) {
           firstBatchDone = true;
-          renderFrame(0);
           setReady(true);
-        }
-      };
-      img.onerror = () => {
-        loaded++;
-        if (!firstBatchDone && loaded >= INITIAL_BATCH) {
-          firstBatchDone = true;
           renderFrame(0);
-          setReady(true);
         }
       };
       images.push(img);
     }
-
-    framesRef.current = images;
 
     return () => {
       images.forEach((img) => {
@@ -153,9 +147,8 @@ export function WalkingBg({ visible = false }: WalkingBgProps) {
         canvas.height = Math.floor(window.innerHeight * dpr);
         renderFrame(currentFrameIdxRef.current);
       }
-      setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 100);
+      setTimeout(() => ScrollTrigger.refresh(), 50);
+      setTimeout(() => ScrollTrigger.refresh(), 400);
     }
   }, [visible, ready, renderFrame]);
 
@@ -170,9 +163,9 @@ export function WalkingBg({ visible = false }: WalkingBgProps) {
 
       ScrollTrigger.create({
         trigger: targetEl,
-        start: 'top bottom',
+        start: 'top top',
         end: 'bottom bottom',
-        scrub: isMob ? true : 0.5,
+        scrub: isMob ? 0.2 : 0.4,
         onUpdate: (self) => {
           const frameIdx = Math.min(
             Math.floor(self.progress * WALKING_TOTAL_FRAMES),
