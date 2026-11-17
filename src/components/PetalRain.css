@@ -1,0 +1,25 @@
+/* ======================================================================
+   PETAL RAIN — Gentle shower of rose/flower petals after hero section
+   ====================================================================== */
+
+.petal-rain {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 12;
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.petal-rain--active {
+  opacity: 1;
+}
+
+.petal-rain-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}

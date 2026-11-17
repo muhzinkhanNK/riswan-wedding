@@ -15,6 +15,7 @@ import { TravelSection } from './components/TravelSection';
 import { MediaSection } from './components/MediaSection';
 import { Footer } from './components/Footer';
 import { AudioControl } from './components/AudioControl';
+import { PetalRain } from './components/PetalRain';
 import './App.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -214,6 +215,7 @@ function App() {
       )}
 
       <WalkingBg visible={introDone} />
+      <PetalRain introDone={introDone} />
 
       <div className={`post-intro ${introDone ? 'post-intro--visible' : ''}`}>
         <HeroImage visible={introDone} />
