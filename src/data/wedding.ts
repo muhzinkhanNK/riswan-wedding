@@ -112,15 +112,6 @@ export const weddingData = {
       whatsapp:
         "https://wa.me/917306388457?text=Assalamu%20Alaikum%20Sufiyan,%20regarding%20Rizwan's%20wedding",
     },
-    {
-      id: 'azeez',
-      role: "Groom's Father-in-law",
-      name: 'Azeez',
-      phone: '+91 97447 12033',
-      tel: '+919744712033',
-      whatsapp:
-        "https://wa.me/919744712033?text=Assalamu%20Alaikum%20Azeez%20ikka,%20regarding%20Binsha's%20wedding",
-    },
   ] as WeddingContact[],
   travelGuide: [
     {
