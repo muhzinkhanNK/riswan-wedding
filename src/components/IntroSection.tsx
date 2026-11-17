@@ -10,11 +10,13 @@ gsap.registerPlugin(ScrollTrigger);
 // true  → "TAP TO ENTER" overlay, doors open automatically (no scroll)
 // false → original scroll-scrubbed intro
 const AUTO_PLAY_MODE = true;
-const AUTO_PLAY_DURATION = 6; // seconds for the full door-opening
+// const AUTO_PLAY_DURATION = 6; // unused — now using video playback
 const MOBILE_BREAKPOINT = 768;
 const INTRO_TOTAL_FRAMES_PC = 120;
 const INTRO_TOTAL_FRAMES_MOBILE = 210;
 const INITIAL_BATCH = 15;
+const MOBILE_INTRO_VIDEO = '/videos/no_our wedding mobile.mp4';
+const PC_INTRO_VIDEO = '/videos/notext pc view.mp4';
 
 function getIntroTotalFrames(isMobile: boolean): number {
   return isMobile ? INTRO_TOTAL_FRAMES_MOBILE : INTRO_TOTAL_FRAMES_PC;
@@ -44,6 +46,7 @@ interface IntroSectionProps {
 export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: IntroSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const familiesRef = useRef<HTMLParagraphElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const tapEnterRef = useRef<HTMLDivElement>(null);
@@ -232,6 +235,10 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
 
   /* ---- Preload frames ---- */
   useEffect(() => {
+    // Both mobile and desktop now use video — skip frame preloading entirely
+    showExperience();
+    return;
+
     const images: HTMLImageElement[] = [];
     let loaded = 0;
     let firstBatchDone = false;
@@ -285,55 +292,40 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
   useEffect(() => {
     if (!AUTO_PLAY_MODE || !ready || !entered) return;
 
-    const isMob = checkIsMobile();
-    const count = getIntroTotalFrames(isMob);
-    const proxy = { frame: 0 };
+    // ── VIDEO PLAYBACK (both mobile and desktop) ──
+    const video = videoRef.current;
+    if (!video) return;
 
-    const tl = gsap.timeline();
+    video.currentTime = 0;
+    video.play().catch(() => {});
+    if (onDoorOpen) onDoorOpen();
 
-    // Fade out tap overlay + intro text as doors begin
+    // Fade out the tap overlay
     if (tapEnterRef.current) {
-      tl.to(tapEnterRef.current, { opacity: 0, duration: 0.7, ease: 'power2.out' }, 0);
-    }
-    if (familiesRef.current) {
-      tl.to(familiesRef.current, { opacity: 0, y: -12, duration: 0.6, ease: 'power2.out' }, 0.3);
+      gsap.to(tapEnterRef.current, { opacity: 0, duration: 0.6, ease: 'power2.out' });
     }
 
-    // Advance frames over the timeline
-    tl.to(
-      proxy,
-      {
-        frame: count - 1,
-        duration: AUTO_PLAY_DURATION,
-        ease: 'power1.inOut',
-        onUpdate: () => renderFrame(Math.round(proxy.frame)),
-      },
-      0.4
-    );
-
-    // Fade to black near the end
-    if (fadeOverlayRef.current) {
-      tl.to(fadeOverlayRef.current, { opacity: 1, duration: 1, ease: 'power2.inOut' }, AUTO_PLAY_DURATION - 0.6);
-    }
-
-    // Complete — hide intro section so hero sits directly after the fade-to-black
-    tl.call(
-      () => {
-        renderFrame(count - 1);
+    const handleEnded = () => {
+      if (fadeOverlayRef.current) {
+        gsap.to(fadeOverlayRef.current, {
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            notifyComplete();
+            setIntroFinished(true);
+            if (sectionRef.current) sectionRef.current.style.display = 'none';
+          },
+        });
+      } else {
         notifyComplete();
         setIntroFinished(true);
-        // Collapse the intro section so there is zero black gap before the hero
-        if (sectionRef.current) {
-          sectionRef.current.style.display = 'none';
-        }
-      },
-      undefined,
-      AUTO_PLAY_DURATION + 0.6
-    );
-
-    return () => {
-      tl.kill();
+        if (sectionRef.current) sectionRef.current.style.display = 'none';
+      }
     };
+
+    video.addEventListener('ended', handleEnded, { once: true });
+    return () => video.removeEventListener('ended', handleEnded);
   }, [AUTO_PLAY_MODE, ready, entered, renderFrame, notifyComplete]);
 
   /* ---- ScrollTrigger: scrub frames + fade overlay (scroll mode only) ---- */
@@ -421,9 +413,17 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
 
       {/* Intro section */}
       <section ref={sectionRef} className="intro-section">
-        {/* Hardware-accelerated canvas sequence */}
+        {/* Video intro — mobile and desktop */}
         <div className="intro-frame-wrap">
-          <canvas ref={canvasRef} className="intro-canvas" />
+          <canvas ref={canvasRef} className="intro-canvas intro-canvas--hidden" />
+          <video
+            ref={videoRef}
+            className="intro-video-mobile"
+            src={mobileMode ? MOBILE_INTRO_VIDEO : PC_INTRO_VIDEO}
+            muted
+            playsInline
+            preload="auto"
+          />
         </div>
 
         {/* Dark vignette overlay */}

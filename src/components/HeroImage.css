@@ -97,11 +97,25 @@
   font-weight: 300;
 }
 
-/* ---- Mobile: portrait couple image, no ugly crop ---- */
+/* ---- Mobile video hero (hidden on desktop) ---- */
+.hero-video-mobile {
+  display: none;
+}
+
+/* ---- Mobile: use mobile intro video instead of static hero image ---- */
 @media (max-width: 768px) {
   .hero-image-bg {
-    background-image: url('/images/hero-mobile.webp');
-    background-position: center 38%;
+    display: none !important;
+  }
+
+  .hero-video-mobile {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
   }
 
   .hero-caption-names {

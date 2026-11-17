@@ -80,6 +80,20 @@
   object-fit: cover;
 }
 
+/* ---- Mobile intro video ---- */
+.intro-video-mobile {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.intro-canvas--hidden {
+  display: none;
+}
+
 /* ---- Dark vignette overlay ---- */
 .intro-vignette {
   position: absolute;

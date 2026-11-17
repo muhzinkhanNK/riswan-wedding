@@ -6,9 +6,40 @@ import './HeroImage.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function HeroImage() {
+interface HeroImageProps {
+  visible?: boolean;
+}
+
+export function HeroImage({ visible }: HeroImageProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // React's muted attribute doesn't always set the underlying DOM property on iOS Safari
+    video.muted = true;
+    video.defaultMuted = true;
+
+    const tryPlay = () => {
+      if (video.paused) {
+        video.play().catch(() => {});
+      }
+    };
+
+    tryPlay();
+
+    // Trigger on any touch / user interaction in case browser blocked autoplay
+    window.addEventListener('touchstart', tryPlay, { once: true, passive: true });
+    window.addEventListener('pointerdown', tryPlay, { once: true, passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', tryPlay);
+      window.removeEventListener('pointerdown', tryPlay);
+    };
+  }, [visible]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -52,7 +83,23 @@ export function HeroImage() {
 
   return (
     <section ref={sectionRef} className="hero-image-section" id="hero">
+      {/* Desktop background */}
       <div ref={bgRef} className="hero-image-bg" />
+
+      {/* Mobile hero video */}
+      <video
+        ref={videoRef}
+        className="hero-video-mobile"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+      >
+        <source src="/videos/mobile%20intro.mp4" type="video/mp4" />
+        <source src="/videos/mobile intro.mp4" type="video/mp4" />
+      </video>
+
       <div className="hero-image-overlay" />
 
       <div className="hero-image-caption">
@@ -64,7 +111,7 @@ export function HeroImage() {
         </h2>
         <span className="hero-caption-sub">THE JOURNEY BEGINS</span>
       </div>
-      <a href="#next-section" className="hero-scroll-arrow" aria-label="Scroll down">
+      <a href="#couple" className="hero-scroll-arrow" aria-label="Scroll down">
         <span></span>
       </a>
     </section>

@@ -20,12 +20,6 @@ import './App.css';
 gsap.registerPlugin(ScrollTrigger);
 
 /* ---- Image paths to preload ---- */
-const INTRO_FRAMES_PC = Array.from({ length: 120 }, (_, i) =>
-  `/images/new/intropc/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
-);
-const INTRO_FRAMES_MOBILE = Array.from({ length: 210 }, (_, i) =>
-  `/images/new/newintromobileg/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
-);
 const WALKING_FRAMES_PC = Array.from({ length: 117 }, (_, i) =>
   `/images/new/walkingpc/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
 );
@@ -33,23 +27,13 @@ const WALKING_FRAMES_MOBILE = Array.from({ length: 117 }, (_, i) =>
   `/images/new/walkingmobile/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`
 );
 
-/* ---- Hero images (bridge intro -> content) ---- */
-const HERO_IMAGES = ['/images/hero-desktop.webp', '/images/hero-mobile.webp'];
-
 function getMobilePaths(): string[] {
-  const paths: string[] = [];
-  paths.push(...HERO_IMAGES);
-  paths.push(...INTRO_FRAMES_MOBILE);
-  paths.push(...WALKING_FRAMES_MOBILE);
-  return paths;
+  // Mobile intro & hero are now lightweight videos; only walking background needs preloading
+  return [...WALKING_FRAMES_MOBILE];
 }
 
 function getDesktopPaths(): string[] {
-  const paths: string[] = [];
-  paths.push(...HERO_IMAGES);
-  paths.push(...INTRO_FRAMES_PC);
-  paths.push(...WALKING_FRAMES_PC);
-  return paths;
+  return ['/images/hero-desktop.webp', ...WALKING_FRAMES_PC];
 }
 
 function App() {
@@ -232,7 +216,7 @@ function App() {
       <WalkingBg visible={introDone} />
 
       <div className={`post-intro ${introDone ? 'post-intro--visible' : ''}`}>
-        <HeroImage />
+        <HeroImage visible={introDone} />
         <CoupleReveal />
         <WeddingEvents />
         <VenueSection />
