@@ -17,9 +17,10 @@ interface IntroSectionProps {
   onIntroComplete?: () => void;
   onIntroReset?: () => void;
   onDoorOpen?: () => void;
+  onVideoReady?: () => void;
 }
 
-export function IntroSection({ onIntroComplete, onDoorOpen }: IntroSectionProps) {
+export function IntroSection({ onIntroComplete, onDoorOpen, onVideoReady }: IntroSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const tapEnterRef = useRef<HTMLDivElement>(null);
@@ -116,6 +117,34 @@ export function IntroSection({ onIntroComplete, onDoorOpen }: IntroSectionProps)
     setReady(true);
   }, []);
 
+  /* ---- Notify parent when intro video buffer is ready ---- */
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    let notified = false;
+    const notify = () => {
+      if (notified) return;
+      notified = true;
+      if (onVideoReady) onVideoReady();
+    };
+
+    if (video.readyState >= 3) {
+      notify();
+      return;
+    }
+
+    video.addEventListener('canplay', notify, { once: true });
+    video.addEventListener('canplaythrough', notify, { once: true });
+    video.addEventListener('loadeddata', notify, { once: true });
+
+    return () => {
+      video.removeEventListener('canplay', notify);
+      video.removeEventListener('canplaythrough', notify);
+      video.removeEventListener('loadeddata', notify);
+    };
+  }, [onVideoReady, mobileMode]);
+
   /* ---- Tap to enter handler: triggers video playback synchronously for zero-latency start ---- */
   const handleEnter = useCallback(() => {
     if (enteredRef.current) return;
@@ -124,7 +153,9 @@ export function IntroSection({ onIntroComplete, onDoorOpen }: IntroSectionProps)
 
     const video = videoRef.current;
     if (video) {
-      video.currentTime = 0;
+      if (video.currentTime !== 0) {
+        video.currentTime = 0;
+      }
       video.play().catch(() => {});
     }
 
