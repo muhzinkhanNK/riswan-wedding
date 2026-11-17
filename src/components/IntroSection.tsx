@@ -1,36 +1,12 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { weddingData } from '../data/wedding';
 import './IntroSection.css';
 
-gsap.registerPlugin(ScrollTrigger);
-
 /* ---------- Config ---------- */
-// true  → "TAP TO ENTER" overlay, doors open automatically (no scroll)
-// false → original scroll-scrubbed intro
-const AUTO_PLAY_MODE = true;
-// const AUTO_PLAY_DURATION = 6; // unused — now using video playback
 const MOBILE_BREAKPOINT = 768;
-const INTRO_TOTAL_FRAMES_PC = 120;
-const INTRO_TOTAL_FRAMES_MOBILE = 210;
-const INITIAL_BATCH = 15;
 const MOBILE_INTRO_VIDEO = '/videos/no_our wedding mobile.mp4';
 const PC_INTRO_VIDEO = '/videos/notext pc view.mp4';
-
-function getIntroTotalFrames(isMobile: boolean): number {
-  return isMobile ? INTRO_TOTAL_FRAMES_MOBILE : INTRO_TOTAL_FRAMES_PC;
-}
-
-function getIntroFramePath(isMobile: boolean, i: number): string {
-  const folder = isMobile ? '/images/new/newintromobileg' : '/images/new/intropc';
-  return `${folder}/ezgif-frame-${String(i).padStart(3, '0')}.webp`;
-}
-
-/* ---------- Helpers ---------- */
-function clamp(v: number): number {
-  return Math.max(0, Math.min(1, v));
-}
 
 function checkIsMobile(): boolean {
   return window.innerWidth < MOBILE_BREAKPOINT;
@@ -43,17 +19,12 @@ interface IntroSectionProps {
   onDoorOpen?: () => void;
 }
 
-export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: IntroSectionProps) {
+export function IntroSection({ onIntroComplete, onDoorOpen }: IntroSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const familiesRef = useRef<HTMLParagraphElement>(null);
-  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const tapEnterRef = useRef<HTMLDivElement>(null);
   const fadeOverlayRef = useRef<HTMLDivElement>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
-  const loaderBarRef = useRef<HTMLDivElement>(null);
-  const loaderTextRef = useRef<HTMLSpanElement>(null);
 
   const [ready, setReady] = useState(false);
   const [entered, setEntered] = useState(false);
@@ -61,9 +32,9 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
   const [mobileMode, setMobileMode] = useState(() => checkIsMobile());
   const introCompleteRef = useRef(false);
 
-  // Prevent scrolling during entire intro (tap to enter AND the animation until hero section appears)
+  // Prevent scrolling during entire intro until hero section appears
   useEffect(() => {
-    if (!AUTO_PLAY_MODE || introFinished) {
+    if (introFinished) {
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.width = '';
@@ -103,9 +74,8 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
       window.removeEventListener('keydown', preventKeyScroll);
     };
   }, [introFinished]);
+
   const enteredRef = useRef(false);
-  const framesRef = useRef<HTMLImageElement[]>([]);
-  const currentFrameIdxRef = useRef<number>(0);
 
   /* ---- Notify parent when intro completes ---- */
   const notifyComplete = useCallback(() => {
@@ -115,73 +85,6 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
     }
   }, [onIntroComplete]);
 
-  const drawDimensionsRef = useRef<{ offsetX: number; offsetY: number; renderW: number; renderH: number } | null>(null);
-
-  /* ---- Calculate canvas cover bounds ---- */
-  const calcCoverBounds = useCallback((cw: number, ch: number, iw: number, ih: number) => {
-    if (!iw || !ih || !cw || !ch) return;
-    const canvasRatio = cw / ch;
-    const imgRatio = iw / ih;
-
-    let renderW = cw;
-    let renderH = ch;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    if (imgRatio > canvasRatio) {
-      renderH = ch;
-      renderW = ch * imgRatio;
-      offsetX = (cw - renderW) / 2;
-    } else {
-      renderW = cw;
-      renderH = cw / imgRatio;
-      offsetY = (ch - renderH) / 2;
-    }
-
-    drawDimensionsRef.current = { offsetX, offsetY, renderW, renderH };
-  }, []);
-
-  /* ---- Draw current frame to canvas ---- */
-  const renderFrame = useCallback((frameIdx: number) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    currentFrameIdxRef.current = frameIdx;
-    const img = framesRef.current[frameIdx];
-
-    if (img && img.complete && img.naturalWidth > 0) {
-      const iw = img.naturalWidth;
-      const ih = img.naturalHeight;
-      if (!drawDimensionsRef.current) {
-        calcCoverBounds(canvas.width, canvas.height, iw, ih);
-      }
-      const bounds = drawDimensionsRef.current;
-      if (bounds) {
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, bounds.offsetX, bounds.offsetY, bounds.renderW, bounds.renderH);
-      }
-    } else if (img) {
-      img.onload = () => {
-        if (currentFrameIdxRef.current === frameIdx) {
-          const iw = img.naturalWidth || img.width;
-          const ih = img.naturalHeight || img.height;
-          calcCoverBounds(canvas.width, canvas.height, iw, ih);
-          const bounds = drawDimensionsRef.current;
-          if (bounds) {
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, bounds.offsetX, bounds.offsetY, bounds.renderW, bounds.renderH);
-          }
-        }
-      };
-    }
-  }, [calcCoverBounds]);
-
   /* ---- Handle Resize ---- */
   useEffect(() => {
     const handleResize = () => {
@@ -189,110 +92,34 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
       if (isMob !== mobileMode) {
         setMobileMode(isMob);
       }
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.floor(window.innerWidth * dpr);
-        canvas.height = Math.floor(window.innerHeight * dpr);
-        drawDimensionsRef.current = null; // reset cached cover bounds
-        renderFrame(currentFrameIdxRef.current);
-      }
     };
 
     window.addEventListener('resize', handleResize);
-    handleResize();
-
     return () => window.removeEventListener('resize', handleResize);
-  }, [mobileMode, renderFrame]);
+  }, [mobileMode]);
 
-  /* ---- Fade out loader + animate text in ---- */
-  const showExperience = useCallback(() => {
+  /* ---- Reveal "Tap to Enter" overlay immediately ---- */
+  useEffect(() => {
     if (loaderRef.current) {
-      gsap.to(loaderRef.current, {
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.out',
-        onComplete: () => {
-          if (loaderRef.current) loaderRef.current.style.display = 'none';
-        },
-      });
+      loaderRef.current.style.display = 'none';
     }
-    const tl = gsap.timeline({ delay: 0.3 });
-    if (AUTO_PLAY_MODE) {
-      if (tapEnterRef.current) {
-        tl.to(tapEnterRef.current, { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0.1);
-      }
-    } else {
-      if (familiesRef.current) {
-        tl.to(familiesRef.current, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 0);
-      }
-      if (scrollIndicatorRef.current) {
-        tl.to(scrollIndicatorRef.current, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.2);
-      }
+    if (tapEnterRef.current) {
+      gsap.to(tapEnterRef.current, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.2 });
     }
     setReady(true);
   }, []);
 
-  /* ---- Preload frames ---- */
-  useEffect(() => {
-    // Both mobile and desktop now use video — skip frame preloading entirely
-    showExperience();
-    return;
-
-    const images: HTMLImageElement[] = [];
-    let loaded = 0;
-    let firstBatchDone = false;
-    const count = getIntroTotalFrames(mobileMode);
-
-    for (let i = 1; i <= count; i++) {
-      const img = new Image();
-      img.src = getIntroFramePath(mobileMode, i);
-      img.onload = () => {
-        loaded++;
-        const pct = Math.round((loaded / count) * 100);
-        if (loaderBarRef.current) loaderBarRef.current.style.width = `${pct}%`;
-        if (loaderTextRef.current) loaderTextRef.current.textContent = `${pct}%`;
-
-        if (!firstBatchDone && loaded >= INITIAL_BATCH) {
-          firstBatchDone = true;
-          renderFrame(0);
-          showExperience();
-        }
-      };
-      img.onerror = () => {
-        loaded++;
-        if (!firstBatchDone && loaded >= INITIAL_BATCH) {
-          firstBatchDone = true;
-          renderFrame(0);
-          showExperience();
-        }
-      };
-      images.push(img);
-    }
-
-    framesRef.current = images;
-
-    return () => {
-      images.forEach((img) => {
-        img.onload = null;
-        img.onerror = null;
-      });
-    };
-  }, [mobileMode, renderFrame, showExperience]);
-
-  /* ---- Tap to enter (auto-play mode) ---- */
+  /* ---- Tap to enter handler ---- */
   const handleEnter = useCallback(() => {
     if (enteredRef.current) return;
     enteredRef.current = true;
     setEntered(true);
-    if (onDoorOpen) onDoorOpen();
-  }, [onDoorOpen]);
+  }, []);
 
-  /* ---- Auto-play timeline: scrub all frames without scroll ---- */
+  /* ---- Video playback & completion ---- */
   useEffect(() => {
-    if (!AUTO_PLAY_MODE || !ready || !entered) return;
+    if (!ready || !entered) return;
 
-    // ── VIDEO PLAYBACK (both mobile and desktop) ──
     const video = videoRef.current;
     if (!video) return;
 
@@ -326,96 +153,14 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
 
     video.addEventListener('ended', handleEnded, { once: true });
     return () => video.removeEventListener('ended', handleEnded);
-  }, [AUTO_PLAY_MODE, ready, entered, renderFrame, notifyComplete]);
-
-  /* ---- ScrollTrigger: scrub frames + fade overlay (scroll mode only) ---- */
-  useEffect(() => {
-    if (!ready || AUTO_PLAY_MODE) return;
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const isMob = checkIsMobile();
-    const count = getIntroTotalFrames(isMob);
-
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: 'top top',
-        end: isMob ? '+=160%' : '+=200%',
-        pin: true,
-        anticipatePin: 1,
-        scrub: isMob ? 0.15 : 0.3,
-        onUpdate: (self) => {
-          const p = self.progress;
-
-          // --- Trigger music start when scroll begins / doors open ---
-          if (p > 0.04 && onDoorOpen) {
-            onDoorOpen();
-          }
-
-          // --- Notify when intro is near end ---
-          if (p > 0.85) {
-            notifyComplete();
-          }
-
-          // --- Reset when user scrolls back into intro ---
-          if (p < 0.3 && introCompleteRef.current && onIntroReset) {
-            introCompleteRef.current = false;
-            onIntroReset();
-          }
-
-          // --- Frame scrub ---
-          const frameIdx = Math.min(
-            Math.floor(p * count),
-            count - 1,
-          );
-          renderFrame(frameIdx);
-
-          // --- Families: fade out 15→30% ---
-          if (familiesRef.current) {
-            const fadeOut = clamp((p - 0.15) / 0.15);
-            familiesRef.current.style.opacity = String(1 - fadeOut);
-            familiesRef.current.style.transform = `translateY(${-fadeOut * 15}px)`;
-          }
-
-          // --- Scroll indicator: fade out 8→15% ---
-          if (scrollIndicatorRef.current) {
-            const fadeOut = clamp((p - 0.08) / 0.07);
-            scrollIndicatorRef.current.style.opacity = String(1 - fadeOut);
-          }
-
-          if (fadeOverlayRef.current) {
-            fadeOverlayRef.current.style.opacity = '0';
-          }
-        },
-        onLeave: () => {
-          notifyComplete();
-        },
-      });
-    }, section);
-
-    return () => ctx.revert();
-  }, [ready, notifyComplete, onIntroReset, onDoorOpen, renderFrame]);
+  }, [ready, entered, onDoorOpen, notifyComplete]);
 
   return (
     <>
-      {/* Loader */}
-      <div ref={loaderRef} className="intro-loader">
-        <div className="intro-loader-inner">
-          <div className="intro-loader-bar-track">
-            <div ref={loaderBarRef} className="intro-loader-bar-fill" />
-          </div>
-          <span ref={loaderTextRef} className="intro-loader-text">
-            Loading…
-          </span>
-        </div>
-      </div>
-
       {/* Intro section */}
       <section ref={sectionRef} className="intro-section">
         {/* Video intro — mobile and desktop */}
         <div className="intro-frame-wrap">
-          <canvas ref={canvasRef} className="intro-canvas intro-canvas--hidden" />
           <video
             ref={videoRef}
             className="intro-video-mobile"
@@ -433,59 +178,42 @@ export function IntroSection({ onIntroComplete, onIntroReset, onDoorOpen }: Intr
         <div ref={fadeOverlayRef} className="intro-fade-overlay" />
 
         {/* Text overlay */}
-        {AUTO_PLAY_MODE ? (
-          <div ref={tapEnterRef} className="intro-enter" onClick={handleEnter}>
-            {/* Top ornament */}
-            <div className="intro-enter-ornament">
-              <span className="ornament-line" />
-              <span className="ornament-diamond">◆</span>
-              <span className="ornament-line" />
-            </div>
-
-            {/* Families / invitation line */}
-            <p className="intro-families">{weddingData.invitationText}</p>
-
-            {/* Names */}
-            <h1 className="intro-names">
-              {weddingData.groom.firstName}
-              <span className="amp">&amp;</span>
-              {weddingData.bride.firstName}
-            </h1>
-
-            {/* Wedding date */}
-            <p className="intro-enter-date">{weddingData.date.full}</p>
-
-            {/* Bottom ornament */}
-            <div className="intro-enter-ornament bottom">
-              <span className="ornament-line" />
-              <span className="ornament-diamond">◆</span>
-              <span className="ornament-line" />
-            </div>
-
-            {/* CTA Button */}
-            <button type="button" className="intro-enter-btn">
-              <span className="intro-enter-btn-ring" />
-              <span className="intro-enter-btn-ring pulse" />
-              <span className="intro-enter-btn-label">Enter</span>
-            </button>
+        <div ref={tapEnterRef} className="intro-enter" onClick={handleEnter}>
+          {/* Top ornament */}
+          <div className="intro-enter-ornament">
+            <span className="ornament-line" />
+            <span className="ornament-diamond">◆</span>
+            <span className="ornament-line" />
           </div>
-        ) : (
-          <div className="intro-text">
-            <p ref={familiesRef} className="intro-families">
-              {weddingData.invitationText}
-            </p>
-          </div>
-        )}
 
-        {/* Scroll indicator (scroll mode only) */}
-        {!AUTO_PLAY_MODE && (
-          <div ref={scrollIndicatorRef} className="intro-scroll-indicator">
-            <span className="label">SCROLL TO ENTER</span>
-            <span className="arrow">↓</span>
+          {/* Families / invitation line */}
+          <p className="intro-families">{weddingData.invitationText}</p>
+
+          {/* Names */}
+          <h1 className="intro-names">
+            {weddingData.groom.firstName}
+            <span className="amp">&amp;</span>
+            {weddingData.bride.firstName}
+          </h1>
+
+          {/* Wedding date */}
+          <p className="intro-enter-date">{weddingData.date.full}</p>
+
+          {/* Bottom ornament */}
+          <div className="intro-enter-ornament bottom">
+            <span className="ornament-line" />
+            <span className="ornament-diamond">◆</span>
+            <span className="ornament-line" />
           </div>
-        )}
+
+          {/* CTA Button */}
+          <button type="button" className="intro-enter-btn">
+            <span className="intro-enter-btn-ring" />
+            <span className="intro-enter-btn-ring pulse" />
+            <span className="intro-enter-btn-label">Enter</span>
+          </button>
+        </div>
       </section>
     </>
   );
 }
-
