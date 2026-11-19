@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { CalendarPlus, ChevronRight } from 'lucide-react';
+import { CalendarPlus } from 'lucide-react';
 import { weddingData } from '../data/wedding';
 import './CoupleReveal.css';
 
@@ -52,66 +52,6 @@ export function CoupleReveal() {
     const timer = setInterval(updateCountdown, 1000);
     return () => clearInterval(timer);
   }, [updateCountdown]);
-
-  /* ---- Swipe Slider State ---- */
-  const [swipeProgress, setSwipeProgress] = useState(0);
-  const [isDone, setIsDone] = useState(false);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const isDraggingRef = useRef(false);
-  const startXRef = useRef(0);
-
-  const handleStart = (clientX: number) => {
-    isDraggingRef.current = true;
-    startXRef.current = clientX;
-  };
-
-  const handleMove = useCallback(
-    (clientX: number) => {
-      if (!isDraggingRef.current || !trackRef.current || isDone) return;
-      const rect = trackRef.current.getBoundingClientRect();
-      const maxDist = rect.width - 56;
-      const delta = clientX - startXRef.current;
-      const pct = Math.max(0, Math.min(1, delta / maxDist));
-      setSwipeProgress(pct);
-
-      if (pct >= 0.8) {
-        isDraggingRef.current = false;
-        setIsDone(true);
-        setSwipeProgress(1);
-        const eventsEl = document.getElementById('events');
-        if (eventsEl) {
-          eventsEl.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    },
-    [isDone],
-  );
-
-  const handleEnd = useCallback(() => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-    if (swipeProgress < 0.8) {
-      setSwipeProgress(0);
-    }
-  }, [swipeProgress]);
-
-  useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => handleMove(e.clientX);
-    const onTouchMove = (e: TouchEvent) => handleMove(e.touches[0].clientX);
-    const onEnd = () => handleEnd();
-
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('touchmove', onTouchMove);
-    window.addEventListener('mouseup', onEnd);
-    window.addEventListener('touchend', onEnd);
-
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('mouseup', onEnd);
-      window.removeEventListener('touchend', onEnd);
-    };
-  }, [handleMove, handleEnd]);
 
   /* ---- GSAP Scroll Animations ---- */
   useEffect(() => {
@@ -201,35 +141,6 @@ export function CoupleReveal() {
           <div className="count-item">
             <span className="count-num">{timeLeft.secs}</span>
             <span className="count-label">Secs</span>
-          </div>
-        </div>
-
-        {/* Swipe to View Invitation Slider */}
-        <div className="swipe-container">
-          <div
-            ref={trackRef}
-            className={`swipe-track ${isDone ? 'done' : ''}`}
-            onMouseDown={(e) => handleStart(e.clientX)}
-            onTouchStart={(e) => handleStart(e.touches[0].clientX)}
-          >
-            <div
-              className="swipe-fill"
-              style={{ width: `${swipeProgress * 100}%` }}
-            />
-            <div
-              className="swipe-thumb"
-              style={{
-                transform: `translateX(${
-                  swipeProgress *
-                  (trackRef.current ? Math.max(0, trackRef.current.offsetWidth - 52) : 220)
-                }px)`,
-              }}
-            >
-              <ChevronRight className="w-5 h-5 text-amber-200" />
-            </div>
-            <span className="swipe-label">
-              {isDone ? 'Welcome to Celebration! ✦' : 'Swipe to View Invitation'}
-            </span>
           </div>
         </div>
 

@@ -7,6 +7,10 @@
   position: relative;
   width: 100%;
   height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  max-height: 100svh;
+  max-height: 100dvh;
   overflow: hidden;
   background: var(--bg-emerald-deep);
 }
@@ -104,6 +108,11 @@
 /* ---- Mobile: use mobile intro video instead of static hero image ---- */
 @media (max-width: 768px) {
   .hero-image-section {
+    height: 100vh;
+    height: 100svh;
+    height: 100dvh;
+    max-height: 100svh;
+    max-height: 100dvh;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
   }
@@ -136,6 +145,10 @@
       );
   }
 
+  .hero-image-caption {
+    padding-bottom: 5.5rem;
+  }
+
   .hero-caption-names {
     font-size: clamp(2.1rem, 11vw, 3.4rem);
   }
@@ -143,32 +156,274 @@
   .hero-caption-sub {
     letter-spacing: 0.4em;
   }
+
+  .hero-swipe-container {
+    bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px));
+    width: calc(100% - 3rem);
+    max-width: 280px;
+  }
+
+  .hero-swipe-track {
+    height: 48px;
+  }
+
+  .hero-swipe-thumb {
+    width: 40px;
+    height: 40px;
+    left: 4px;
+  }
+
+  .hero-swipe-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    padding-left: 1.6rem;
+  }
 }
 
-/* Down arrow for hero section */
-.hero-scroll-arrow {
+/* ---- Hero Swipe to View Invitation Slider ---- */
+.hero-swipe-container {
   position: absolute;
-  bottom: 30px;
+  bottom: 2.25rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 30px;
-  height: 30px;
-  z-index: 5;
-  text-decoration: none;
+  width: calc(100% - 2.5rem);
+  max-width: 320px;
+  z-index: 10;
   pointer-events: auto;
 }
 
-.hero-scroll-arrow span {
-  display: block;
-  width: 12px;
-  height: 12px;
-  border-left: 2px solid rgba(255, 255, 255, 0.85);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.85);
-  transform: rotate(-45deg);
-  animation: gentleFloat 3.5s ease-in-out infinite;
+/* Undulating / wiggling aura glowing directly around the button */
+.hero-swipe-aura {
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0.15) 0%,
+    rgba(245, 230, 168, 0.75) 25%,
+    rgba(212, 175, 55, 0.25) 50%,
+    rgba(245, 230, 168, 0.8) 75%,
+    rgba(212, 175, 55, 0.15) 100%
+  );
+  background-size: 250% 100%;
+  filter: blur(6px);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 0;
+  animation: heroAuraFlow 3s ease-in-out infinite, heroAuraPulse 2.4s ease-in-out infinite alternate;
 }
 
-@keyframes gentleFloat {
-  0%, 100% { transform: translateY(0) rotate(-45deg); opacity: 0.85; }
-  50% { transform: translateY(6px) rotate(-45deg); opacity: 0.45; }
+@keyframes heroAuraFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 250% 50%;
+  }
 }
+
+@keyframes heroAuraPulse {
+  0% {
+    transform: scale(0.99, 0.98);
+    opacity: 0.6;
+    filter: blur(5px);
+  }
+  100% {
+    transform: scale(1.03, 1.12);
+    opacity: 0.95;
+    filter: blur(8px);
+  }
+}
+
+/* Radiating ripple / wave rings expanding around the button */
+.hero-swipe-wave {
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(245, 230, 168, 0.65);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.45);
+  pointer-events: none;
+  z-index: 0;
+  animation: heroWavePulse 3s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+.hero-swipe-wave--2 {
+  animation-delay: 1.5s;
+}
+
+@keyframes heroWavePulse {
+  0% {
+    transform: scale(0.98, 0.96);
+    opacity: 0.9;
+    border-color: rgba(245, 230, 168, 0.75);
+  }
+  55% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.08, 1.38);
+    opacity: 0;
+    border-color: rgba(212, 175, 55, 0);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0);
+  }
+}
+
+.hero-swipe-track {
+  position: relative;
+  height: 52px;
+  background: rgba(5, 20, 14, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  border-radius: 9999px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  cursor: grab;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    inset 0 0 20px rgba(0, 0, 0, 0.6),
+    0 0 22px rgba(212, 175, 55, 0.2);
+  touch-action: none;
+  z-index: 1;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  animation: heroTrackWiggle 3.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+}
+
+/* Gentle eye-catching wiggle animation on the track */
+@keyframes heroTrackWiggle {
+  0%, 72%, 100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateX(-4px) translateY(-1px) rotate(-1deg);
+  }
+  78% {
+    transform: translateX(4px) translateY(1px) rotate(1deg);
+  }
+  81% {
+    transform: translateX(-3px) translateY(-0.5px) rotate(-0.6deg);
+  }
+  84% {
+    transform: translateX(3px) translateY(0.5px) rotate(0.6deg);
+  }
+  87% {
+    transform: translateX(-1px) translateY(0) rotate(-0.2deg);
+  }
+  90% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+}
+
+.hero-swipe-track:hover {
+  border-color: rgba(212, 175, 55, 0.8);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 28px rgba(212, 175, 55, 0.35);
+}
+
+.hero-swipe-track:active,
+.hero-swipe-container.is-dragging .hero-swipe-track {
+  cursor: grabbing;
+  animation-play-state: paused;
+  transform: none;
+}
+
+.hero-swipe-track.done {
+  border-color: rgba(245, 230, 168, 0.9);
+  box-shadow: 0 0 35px rgba(212, 175, 55, 0.5);
+  animation: none;
+}
+
+/* Hide surrounding waves once unlocked */
+.hero-swipe-container.is-unlocked .hero-swipe-aura,
+.hero-swipe-container.is-unlocked .hero-swipe-wave {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.hero-swipe-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.25), rgba(245, 230, 168, 0.65));
+  border-radius: 9999px;
+  pointer-events: none;
+  transition: width 0.08s linear;
+}
+
+.hero-swipe-thumb {
+  position: absolute;
+  left: 4px;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #f5e6a8, #d4af37, #997517);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.65),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  transition: transform 0.08s linear;
+  cursor: grab;
+  touch-action: none;
+  animation: thumbBreathe 2.2s ease-in-out infinite;
+}
+
+@keyframes thumbBreathe {
+  0%, 100% {
+    box-shadow: 
+      0 0 16px rgba(212, 175, 55, 0.6),
+      0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 0 28px rgba(245, 230, 168, 0.95),
+      0 0 14px rgba(212, 175, 55, 0.8),
+      0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.hero-swipe-thumb:active {
+  cursor: grabbing;
+}
+
+.hero-swipe-label {
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-title);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  pointer-events: none;
+  z-index: 1;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.8), 0 0 8px rgba(212, 175, 55, 0.4);
+  padding-left: 1.8rem;
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0.7) 0%,
+    rgba(255, 245, 215, 1) 50%,
+    rgba(212, 175, 55, 0.7) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: heroTextShimmer 2.8s linear infinite;
+}
+
+@keyframes heroTextShimmer {
+  0% {
+    background-position: -100% center;
+  }
+  100% {
+    background-position: 100% center;
+  }
+}
+
+
