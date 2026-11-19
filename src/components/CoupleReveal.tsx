@@ -131,8 +131,8 @@ export function CoupleReveal() {
             ease: 'power3.out',
             scrollTrigger: {
               trigger: section,
-              start: 'top 75%',
-              toggleActions: 'play none none reverse',
+              start: 'top 80%',
+              once: true,
             },
           },
         );

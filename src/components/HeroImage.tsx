@@ -43,39 +43,53 @@ export function HeroImage({ visible }: HeroImageProps) {
 
   useEffect(() => {
     const section = sectionRef.current;
-    const bg = bgRef.current;
-    if (!section || !bg) return;
+    if (!section) return;
 
     const ctx = gsap.context(() => {
-      // Slow cinematic reveal when the section appears (fades in from the intro's black)
-      gsap.fromTo(
-        bg,
-        { scale: 1.12, opacity: 0 },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 2.4,
-          ease: 'power2.out',
-          delay: 0.1,
-        },
-      );
-
-      // Gentle parallax drift as the user scrolls past
-      gsap.fromTo(
-        bg,
-        { yPercent: 0, scale: 1 },
-        {
-          yPercent: 10,
-          scale: 1.18,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: 0.6,
+      const bg = bgRef.current;
+      // Desktop-only image reveal & gentle parallax
+      if (bg) {
+        gsap.fromTo(
+          bg,
+          { scale: 1.12, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 2.4,
+            ease: 'power2.out',
+            delay: 0.1,
           },
+        );
+
+        gsap.fromTo(
+          bg,
+          { yPercent: 0, scale: 1 },
+          {
+            yPercent: 10,
+            scale: 1.18,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top top',
+              end: 'bottom top',
+              scrub: 0.6,
+            },
+          },
+        );
+      }
+
+      // Smooth scroll fade for caption and arrow (works on both mobile & desktop)
+      gsap.to(['.hero-image-caption', '.hero-scroll-arrow'], {
+        opacity: 0,
+        y: -25,
+        ease: 'power1.out',
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: '45% top',
+          scrub: 0.3,
         },
-      );
+      });
     }, section);
 
     return () => ctx.revert();

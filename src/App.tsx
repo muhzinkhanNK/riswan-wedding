@@ -119,7 +119,9 @@ function App() {
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 1.2,
+      touchMultiplier: 1.0,
+      smoothWheel: true,
+      syncTouch: false,
     });
     lenisRef.current = lenis;
     lenis.on('scroll', ScrollTrigger.update);
